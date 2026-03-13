@@ -62,7 +62,7 @@ export default async function StockPage({ params }: StockPageProps) {
         </p>
       )}
 
-      <div className="mb-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="mb-10 grid grid-cols-2 gap-3 sm:grid-cols-3">
         {fields.map((field) => (
           <div
             key={field.label}
