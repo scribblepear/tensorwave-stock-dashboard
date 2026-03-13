@@ -9,30 +9,25 @@ type StockCardProps = {
 export function StockCard({ stock }: StockCardProps) {
   return (
     <Link href={`/stock/${stock.symbol}`}>
-      <div className="group flex items-center gap-4 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition-all hover:shadow-md hover:border-zinc-300 hover:-translate-y-0.5 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700">
-        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
+      <div className="group flex items-center gap-4 rounded-2xl border border-card-border bg-card p-5 shadow-sm transition-all hover:shadow-lg hover:border-accent/40 hover:-translate-y-1">
+        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-accent-light">
           <Image
             src={stock.logoUrl}
             alt={`${stock.name} logo`}
             fill
-            className="object-contain p-1"
+            className="object-contain p-1.5"
             sizes="48px"
           />
         </div>
         <div className="min-w-0 flex-1">
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
-              {stock.symbol}
-            </span>
-            <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
-              {stock.sector}
-            </span>
-          </div>
-          <p className="truncate text-sm text-zinc-500 dark:text-zinc-400">
+          <span className="text-lg font-bold text-foreground">
+            {stock.symbol}
+          </span>
+          <p className="truncate text-sm text-muted">
             {stock.name}
           </p>
         </div>
-        <div className="text-zinc-400 transition-transform group-hover:translate-x-1">
+        <div className="text-muted transition-all group-hover:translate-x-1 group-hover:text-accent">
           →
         </div>
       </div>

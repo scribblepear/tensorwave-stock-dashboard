@@ -1,6 +1,6 @@
 "use client";
 
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { type DailyPrice } from "@/lib/alpha-vantage";
 import { format, parseISO } from "date-fns";
 
@@ -14,41 +14,60 @@ export function PriceChart({ prices }: PriceChartProps) {
     close: p.close,
   }));
 
+  const firstClose = chartData[0]?.close ?? 0;
+  const lastClose = chartData[chartData.length - 1]?.close ?? 0;
+  const isPositive = lastClose >= firstClose;
+
+  const strokeColor = isPositive ? "#16a34a" : "#dc2626";
+  const fillColor = isPositive ? "#16a34a" : "#dc2626";
+
   return (
     <div className="h-72 w-full sm:h-80">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+        <AreaChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
+          <defs>
+            <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={fillColor} stopOpacity={0.2} />
+              <stop offset="100%" stopColor={fillColor} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--card-border)" strokeOpacity={0.5} />
           <XAxis
             dataKey="date"
-            tick={{ fontSize: 11, fill: "#a1a1aa" }}
+            tick={{ fontSize: 11, fill: "var(--muted)" }}
             tickFormatter={(val: string) => format(parseISO(val), "MMM d")}
             interval="preserveStartEnd"
+            axisLine={{ stroke: "var(--card-border)" }}
+            tickLine={false}
           />
           <YAxis
-            tick={{ fontSize: 11, fill: "#a1a1aa" }}
+            tick={{ fontSize: 11, fill: "var(--muted)" }}
             domain={["auto", "auto"]}
             tickFormatter={(val: number) => `$${val.toFixed(0)}`}
+            axisLine={false}
+            tickLine={false}
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: "#18181b",
-              border: "1px solid #3f3f46",
-              borderRadius: "8px",
-              color: "#fafafa",
+              backgroundColor: "var(--card)",
+              border: "1px solid var(--card-border)",
+              borderRadius: "12px",
+              color: "var(--foreground)",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
             }}
             labelFormatter={(label) => format(parseISO(String(label)), "MMM d, yyyy")}
             formatter={(value) => [`$${Number(value).toFixed(2)}`, "Close"]}
           />
-          <Line
+          <Area
             type="monotone"
             dataKey="close"
-            stroke="#3b82f6"
+            stroke={strokeColor}
             strokeWidth={2}
+            fill="url(#priceGradient)"
             dot={false}
-            activeDot={{ r: 4, fill: "#3b82f6" }}
+            activeDot={{ r: 4, fill: strokeColor, stroke: "#fff", strokeWidth: 2 }}
           />
-        </LineChart>
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );
