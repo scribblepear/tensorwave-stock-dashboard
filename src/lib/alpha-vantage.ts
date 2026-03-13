@@ -1,3 +1,6 @@
+import { readFileSync, existsSync } from "fs";
+import { join } from "path";
+
 const API_KEY = process.env.ALPHA_VANTAGE_API_KEY ?? "";
 const BASE_URL = "https://www.alphavantage.co/query";
 
@@ -30,15 +33,47 @@ type RawTimeSeriesEntry = {
   "5. volume": string;
 };
 
-async function rateLimitedFetch(url: string): Promise<Response> {
+type CacheEntry = {
+  data: Record<string, unknown>;
+  timestamp: number;
+};
+
+const cache = new Map<string, CacheEntry>();
+const CACHE_TTL = 86400 * 1000;
+
+function loadMockData(filename: string): Record<string, unknown> | null {
+  const mockPath = join(process.cwd(), "src", "data", "mock", filename);
+  if (!existsSync(mockPath)) return null;
+  return JSON.parse(readFileSync(mockPath, "utf-8")) as Record<string, unknown>;
+}
+
+function isRateLimited(data: Record<string, unknown>): boolean {
+  return typeof data.Information === "string" && data.Information.includes("rate limit");
+}
+
+async function fetchWithCache(url: string, mockFile: string): Promise<Record<string, unknown>> {
+  const cached = cache.get(url);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.data;
+  }
+
   await new Promise((resolve) => setTimeout(resolve, 1500));
-  return fetch(url, { cache: "no-store" });
+  const res = await fetch(url, { cache: "no-store" });
+  const data: Record<string, unknown> = await res.json();
+
+  if (isRateLimited(data)) {
+    const mock = loadMockData(mockFile);
+    if (mock) return mock;
+    return data;
+  }
+
+  cache.set(url, { data, timestamp: Date.now() });
+  return data;
 }
 
 export async function fetchCompanyOverview(symbol: string): Promise<CompanyOverview | null> {
   const url = `${BASE_URL}?function=OVERVIEW&symbol=${encodeURIComponent(symbol)}&apikey=${API_KEY}`;
-  const res = await rateLimitedFetch(url);
-  const data: Record<string, unknown> = await res.json();
+  const data = await fetchWithCache(url, `overview-${symbol}.json`);
 
   if (!data.Symbol) return null;
 
@@ -56,8 +91,7 @@ export async function fetchCompanyOverview(symbol: string): Promise<CompanyOverv
 
 export async function fetchDailyPrices(symbol: string): Promise<DailyPrice[]> {
   const url = `${BASE_URL}?function=TIME_SERIES_DAILY&symbol=${encodeURIComponent(symbol)}&outputsize=compact&apikey=${API_KEY}`;
-  const res = await rateLimitedFetch(url);
-  const data: Record<string, unknown> = await res.json();
+  const data = await fetchWithCache(url, `daily-${symbol}.json`);
 
   const timeSeries = data["Time Series (Daily)"] as Record<string, RawTimeSeriesEntry> | undefined;
   if (!timeSeries) return [];

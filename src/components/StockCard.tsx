@@ -16,7 +16,7 @@ export function StockCard({ stock }: StockCardProps) {
             alt={`${stock.name} logo`}
             fill
             className="object-contain p-1"
-            unoptimized
+            sizes="48px"
           />
         </div>
         <div className="min-w-0 flex-1">

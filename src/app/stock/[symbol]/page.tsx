@@ -45,7 +45,7 @@ export default async function StockPage({ params }: StockPageProps) {
             alt={`${stock.name} logo`}
             fill
             className="object-contain p-2"
-            unoptimized
+            sizes="64px"
           />
         </div>
         <div>
