@@ -8,6 +8,8 @@ import { AnimatedPrice } from "@/components/AnimatedPrice";
 import { ScrambleText } from "@/components/ScrambleText";
 import { RevealText } from "@/components/RevealText";
 import { Card, CardContent } from "@/components/ui/card";
+import { FinancialMetrics } from "@/components/FinancialMetrics";
+import { readExtendedOverview } from "@/lib/extended-overview";
 
 type StockPageProps = {
   params: Promise<{ symbol: string }>;
@@ -25,6 +27,7 @@ export default async function StockPage({ params }: StockPageProps) {
     fetchDailyPrices(upperSymbol),
   ]);
 
+  const extendedOverview = readExtendedOverview(upperSymbol);
   const latestPrice = prices[0];
   const isPositive = latestPrice ? latestPrice.percentChange >= 0 : true;
 
@@ -173,6 +176,9 @@ export default async function StockPage({ params }: StockPageProps) {
           </CardContent>
         </Card>
       )}
+
+      {/* Financial Metrics */}
+      {extendedOverview && <FinancialMetrics data={extendedOverview} />}
     </main>
   );
 }

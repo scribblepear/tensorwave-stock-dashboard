@@ -141,6 +141,19 @@ export function DetailsSkeleton() {
             </Card>
           </div>
         </div>
+
+        {/* Fundamentals */}
+        <div className="mt-4">
+          <div className="h-6 w-36 rounded bg-muted" />
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="rounded-lg border border-border/40 bg-muted/30 px-3 py-2.5">
+                <div className="h-3 w-16 rounded bg-muted" />
+                <div className="mt-1.5 h-4 w-12 rounded bg-muted" />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

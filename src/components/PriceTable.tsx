@@ -20,7 +20,11 @@ export function PriceTable({ prices, highlightedDate, onClickDate }: PriceTableP
     const row = rowRefs.current.get(highlightedDate);
     if (!row) return;
 
-    row.scrollIntoView({ block: "center", behavior: "smooth" });
+    const container = scrollRef.current;
+    const rowTop = row.offsetTop;
+    const rowHeight = row.offsetHeight;
+    const containerHeight = container.clientHeight;
+    container.scrollTo({ top: rowTop - containerHeight / 2 + rowHeight / 2, behavior: "smooth" });
   }, [highlightedDate]);
 
   return (
@@ -51,13 +55,13 @@ export function PriceTable({ prices, highlightedDate, onClickDate }: PriceTableP
                       : ""
                   }`}
                 >
-                  <td className="py-2 px-3 text-center font-medium">
+                  <td className="py-2 px-3 text-center font-medium whitespace-nowrap">
                     {format(parseISO(price.date), "MMM d, yyyy")}
                   </td>
                   <td className="py-2 px-3 text-center tabular-nums">
                     ${price.close.toFixed(2)}
                   </td>
-                  <td className="py-2 px-3 text-center tabular-nums text-muted-foreground">
+                  <td className="py-2 px-3 text-center tabular-nums">
                     {price.volume.toLocaleString()}
                   </td>
                   <td className={`py-2 px-3 text-center tabular-nums font-semibold ${
