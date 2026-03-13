@@ -1,0 +1,10 @@
+{
+  "Symbol": "NFLX",
+  "AssetType": "Common Stock",
+  "Name": "Netflix Inc",
+  "Description": "Netflix, Inc. is an American subscription video on-demand over-the-top streaming service and production company headquartered in Los Gatos, California. Netflix is the world's largest entertainment and media company by market capitalization and the largest streaming service by number of paid subscribers, with over 300 million subscribers globally.",
+  "Exchange": "NASDAQ",
+  "Sector": "COMMUNICATION SERVICES",
+  "Industry": "ENTERTAINMENT",
+  "MarketCapitalization": "430000000000"
+}

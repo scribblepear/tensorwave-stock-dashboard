@@ -1,0 +1,10 @@
+{
+  "Symbol": "NVDA",
+  "AssetType": "Common Stock",
+  "Name": "NVIDIA Corporation",
+  "Description": "NVIDIA Corporation is an American multinational corporation and technology company headquartered in Santa Clara, California. It is a dominant designer and manufacturer of graphics processing units (GPUs) and system-on-chip units. NVIDIA is a leader in artificial intelligence hardware and software, with its GPUs being widely used for AI training and inference workloads.",
+  "Exchange": "NASDAQ",
+  "Sector": "TECHNOLOGY",
+  "Industry": "SEMICONDUCTORS",
+  "MarketCapitalization": "3400000000000"
+}
