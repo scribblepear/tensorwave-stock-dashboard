@@ -31,17 +31,17 @@ export function PriceChart({ prices }: PriceChartProps) {
               <stop offset="100%" stopColor={fillColor} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--card-border)" strokeOpacity={0.5} />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" strokeOpacity={0.5} />
           <XAxis
             dataKey="date"
-            tick={{ fontSize: 11, fill: "var(--muted)" }}
+            tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
             tickFormatter={(val: string) => format(parseISO(val), "MMM d")}
             interval="preserveStartEnd"
-            axisLine={{ stroke: "var(--card-border)" }}
+            axisLine={{ stroke: "var(--border)" }}
             tickLine={false}
           />
           <YAxis
-            tick={{ fontSize: 11, fill: "var(--muted)" }}
+            tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
             domain={["auto", "auto"]}
             tickFormatter={(val: number) => `$${val.toFixed(0)}`}
             axisLine={false}
@@ -50,7 +50,7 @@ export function PriceChart({ prices }: PriceChartProps) {
           <Tooltip
             contentStyle={{
               backgroundColor: "var(--card)",
-              border: "1px solid var(--card-border)",
+              border: "1px solid var(--border)",
               borderRadius: "12px",
               color: "var(--foreground)",
               boxShadow: "0 4px 12px rgba(0,0,0,0.15)",

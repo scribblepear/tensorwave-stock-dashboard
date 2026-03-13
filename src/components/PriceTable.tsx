@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { type DailyPrice } from "@/lib/alpha-vantage";
 import { format, parseISO } from "date-fns";
+import { Card } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 
 type PriceTableProps = {
   prices: DailyPrice[];
@@ -16,53 +19,51 @@ export function PriceTable({ prices }: PriceTableProps) {
 
   return (
     <div>
-      <div className="overflow-x-auto rounded-2xl border border-card-border bg-card">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-card-border text-xs uppercase text-muted">
-            <tr>
-              <th className="px-4 py-3">Date</th>
-              <th className="px-4 py-3 text-right">Close</th>
-              <th className="px-4 py-3 text-right">Volume</th>
-              <th className="px-4 py-3 text-right">Change</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-card-border">
+      <Card>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Date</TableHead>
+              <TableHead className="text-right">Close</TableHead>
+              <TableHead className="text-right">Volume</TableHead>
+              <TableHead className="text-right">Change</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {visible.map((price) => (
-              <tr
-                key={price.date}
-                className="transition-colors hover:bg-accent-light/50"
-              >
-                <td className="whitespace-nowrap px-4 py-3 font-medium text-foreground">
+              <TableRow key={price.date}>
+                <TableCell className="font-medium">
                   {format(parseISO(price.date), "MMM d, yyyy")}
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 text-right text-foreground">
+                </TableCell>
+                <TableCell className="text-right">
                   ${price.close.toFixed(2)}
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 text-right text-muted">
+                </TableCell>
+                <TableCell className="text-right text-muted-foreground">
                   {price.volume.toLocaleString()}
-                </td>
-                <td className={`whitespace-nowrap px-4 py-3 text-right font-semibold ${
+                </TableCell>
+                <TableCell className={`text-right font-semibold ${
                   price.percentChange > 0
                     ? "text-positive"
                     : price.percentChange < 0
                       ? "text-negative"
-                      : "text-muted"
+                      : "text-muted-foreground"
                 }`}>
                   {price.percentChange > 0 ? "+" : ""}
                   {price.percentChange.toFixed(2)}%
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </TableBody>
+        </Table>
+      </Card>
       {visibleCount < prices.length && (
-        <button
+        <Button
+          variant="outline"
+          className="mt-4 w-full"
           onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-          className="mt-4 w-full rounded-xl border border-card-border bg-card py-2.5 text-sm font-semibold text-accent transition-colors hover:bg-accent-light"
         >
           Show more
-        </button>
+        </Button>
       )}
     </div>
   );

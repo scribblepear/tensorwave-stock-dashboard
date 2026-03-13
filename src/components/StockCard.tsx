@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { type Stock } from "@/data/stocks";
+import { Card, CardContent } from "@/components/ui/card";
 
 type StockCardProps = {
   stock: Stock;
@@ -9,28 +10,30 @@ type StockCardProps = {
 export function StockCard({ stock }: StockCardProps) {
   return (
     <Link href={`/stock/${stock.symbol}`}>
-      <div className="group flex items-center gap-4 rounded-2xl border border-card-border bg-card p-5 shadow-sm transition-all hover:shadow-lg hover:border-accent/40 hover:-translate-y-1">
-        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-accent-light">
-          <Image
-            src={stock.logoUrl}
-            alt={`${stock.name} logo`}
-            fill
-            className="object-contain p-1.5"
-            sizes="48px"
-          />
-        </div>
-        <div className="min-w-0 flex-1">
-          <span className="text-lg font-bold text-foreground">
-            {stock.symbol}
+      <Card className="group transition-all hover:shadow-lg hover:-translate-y-1 hover:border-primary/30">
+        <CardContent className="flex items-center gap-4 p-5">
+          <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-muted">
+            <Image
+              src={stock.logoUrl}
+              alt={`${stock.name} logo`}
+              fill
+              className="object-contain p-1.5"
+              sizes="44px"
+            />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-base font-semibold text-foreground">
+              {stock.symbol}
+            </p>
+            <p className="truncate text-sm text-muted-foreground">
+              {stock.name}
+            </p>
+          </div>
+          <span className="text-sm text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-primary">
+            →
           </span>
-          <p className="truncate text-sm text-muted">
-            {stock.name}
-          </p>
-        </div>
-        <div className="text-muted transition-all group-hover:translate-x-1 group-hover:text-accent">
-          →
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </Link>
   );
 }
