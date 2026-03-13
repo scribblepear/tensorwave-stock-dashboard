@@ -139,23 +139,17 @@ export function HeroSection({ prices }: HeroSectionProps) {
             <p className="mt-7 max-w-md text-base text-muted-foreground/80 leading-relaxed">
               Real-time prices, trends, and analysis for the top stocks on the market.
             </p>
-            <p className="mt-10 flex items-center gap-2 text-xs text-muted-foreground/50">
-              <svg className="h-3.5 w-3.5 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
-              Scroll to explore
-            </p>
           </div>
 
-          <div className="hidden md:block">
+          <div className="hidden md:flex md:items-center">
             <div
               className="relative w-full max-w-[400px] ml-auto rounded-2xl border border-white/40 bg-white/60 backdrop-blur-xl p-7"
               style={{ boxShadow: "0 25px 60px -12px rgba(0, 0, 0, 0.15), 0 12px 30px -8px rgba(0, 0, 0, 0.1)" }}
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-2xl font-bold">AAPL</p>
-                  <p className="text-sm text-muted-foreground">Apple Inc.</p>
+                  <p className="text-2xl font-bold">AMD</p>
+                  <p className="text-sm text-muted-foreground">Advanced Micro Devices</p>
                 </div>
                 <div className="text-right">
                   <p className="text-2xl font-bold tabular-nums">${latestPrice.toFixed(2)}</p>
@@ -204,8 +198,8 @@ export function HeroSection({ prices }: HeroSectionProps) {
               </div>
 
               <div className="mt-2 flex justify-between text-[10px] text-muted-foreground tabular-nums">
-                <span>40 days ago</span>
-                <span>Today</span>
+                <span>~2 months ago</span>
+                <span>Latest close</span>
               </div>
 
               <div
@@ -223,16 +217,24 @@ export function HeroSection({ prices }: HeroSectionProps) {
         </div>
       </div>
 
-      <button
-        ref={arrowRef}
-        onClick={scrollToContent}
-        className="absolute bottom-8 left-1/2 z-20 -translate-x-1/2 text-muted-foreground/40 transition-opacity hover:text-muted-foreground"
-        aria-label="Scroll to dashboard"
-      >
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
+      <div className="absolute bottom-8 left-1/2 z-20 -translate-x-1/2 flex flex-col items-center gap-2">
+        <p className="flex items-center gap-2 text-xs text-muted-foreground/50">
+          <svg className="h-3.5 w-3.5 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+          Scroll to explore
+        </p>
+        <button
+          ref={arrowRef}
+          onClick={scrollToContent}
+          className="text-muted-foreground/40 transition-opacity hover:text-muted-foreground"
+          aria-label="Scroll to dashboard"
+        >
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      </div>
     </section>
   );
 }

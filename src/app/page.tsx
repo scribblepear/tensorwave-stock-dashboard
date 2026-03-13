@@ -79,7 +79,7 @@ export default function HomePage() {
 
   const totalMarketCap = formatMarketCap(String(totalMarketCapNum));
 
-  const heroPrices = loadAllPrices("AAPL");
+  const heroPrices = loadAllPrices("AMD");
 
   return (
     <>

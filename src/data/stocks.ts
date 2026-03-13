@@ -22,7 +22,7 @@ export const STOCKS: Stock[] = [
   { symbol: "JNJ", name: "Johnson & Johnson", sector: "Healthcare", logoUrl: logoUrl("JNJ") },
   { symbol: "WMT", name: "Walmart Inc.", sector: "Consumer Defensive", logoUrl: logoUrl("WMT") },
   { symbol: "UNH", name: "UnitedHealth", sector: "Healthcare", logoUrl: logoUrl("UNH") },
-  { symbol: "HD", name: "Home Depot", sector: "Consumer Cyclical", logoUrl: logoUrl("HD") },
+  { symbol: "AMD", name: "Advanced Micro Devices", sector: "Technology", logoUrl: logoUrl("AMD") },
   { symbol: "DIS", name: "Disney", sector: "Communication Services", logoUrl: logoUrl("DIS") },
   { symbol: "NFLX", name: "Netflix Inc.", sector: "Communication Services", logoUrl: logoUrl("NFLX") },
 ];
