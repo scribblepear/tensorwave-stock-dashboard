@@ -1,4 +1,4 @@
-import { readFileSync, existsSync } from "fs";
+import { readFileSync, writeFileSync, existsSync, statSync, mkdirSync } from "fs";
 import { join } from "path";
 
 const API_KEY = process.env.ALPHA_VANTAGE_API_KEY ?? "";
@@ -33,47 +33,63 @@ type RawTimeSeriesEntry = {
   "5. volume": string;
 };
 
-type CacheEntry = {
-  data: Record<string, unknown>;
-  timestamp: number;
-};
+const OVERVIEW_TTL = 30 * 24 * 60 * 60 * 1000;
+const DAILY_TTL = 24 * 60 * 60 * 1000;
+const MOCK_DIR = join(process.cwd(), "src", "data", "mock");
 
-const cache = new Map<string, CacheEntry>();
-const CACHE_TTL = 86400 * 1000;
+function readMockFile(filename: string): { data: Record<string, unknown>; mtime: number } | null {
+  const filePath = join(MOCK_DIR, filename);
+  if (!existsSync(filePath)) return null;
+  try {
+    const data = JSON.parse(readFileSync(filePath, "utf-8")) as Record<string, unknown>;
+    const mtime = statSync(filePath).mtimeMs;
+    return { data, mtime };
+  } catch {
+    return null;
+  }
+}
 
-function loadMockData(filename: string): Record<string, unknown> | null {
-  const mockPath = join(process.cwd(), "src", "data", "mock", filename);
-  if (!existsSync(mockPath)) return null;
-  return JSON.parse(readFileSync(mockPath, "utf-8")) as Record<string, unknown>;
+function writeMockFile(filename: string, data: Record<string, unknown>): void {
+  try {
+    mkdirSync(MOCK_DIR, { recursive: true });
+    writeFileSync(join(MOCK_DIR, filename), JSON.stringify(data, null, 2));
+  } catch {
+    // Silently fail (e.g. read-only filesystem on Vercel)
+  }
 }
 
 function isRateLimited(data: Record<string, unknown>): boolean {
   return typeof data.Information === "string" && data.Information.includes("rate limit");
 }
 
-async function fetchWithCache(url: string, mockFile: string): Promise<Record<string, unknown>> {
-  const cached = cache.get(url);
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+async function fetchWithCache(
+  url: string,
+  mockFile: string,
+  ttl: number,
+): Promise<Record<string, unknown>> {
+  const cached = readMockFile(mockFile);
+  if (cached && Date.now() - cached.mtime < ttl) {
     return cached.data;
   }
 
-  await new Promise((resolve) => setTimeout(resolve, 1500));
-  const res = await fetch(url, { cache: "no-store" });
-  const data: Record<string, unknown> = await res.json();
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    const data: Record<string, unknown> = await res.json();
 
-  if (isRateLimited(data)) {
-    const mock = loadMockData(mockFile);
-    if (mock) return mock;
+    if (isRateLimited(data)) {
+      return cached?.data ?? {};
+    }
+
+    writeMockFile(mockFile, data);
     return data;
+  } catch {
+    return cached?.data ?? {};
   }
-
-  cache.set(url, { data, timestamp: Date.now() });
-  return data;
 }
 
 export async function fetchCompanyOverview(symbol: string): Promise<CompanyOverview | null> {
   const url = `${BASE_URL}?function=OVERVIEW&symbol=${encodeURIComponent(symbol)}&apikey=${API_KEY}`;
-  const data = await fetchWithCache(url, `overview-${symbol}.json`);
+  const data = await fetchWithCache(url, `overview-${symbol}.json`, OVERVIEW_TTL);
 
   if (!data.Symbol) return null;
 
@@ -91,7 +107,7 @@ export async function fetchCompanyOverview(symbol: string): Promise<CompanyOverv
 
 export async function fetchDailyPrices(symbol: string): Promise<DailyPrice[]> {
   const url = `${BASE_URL}?function=TIME_SERIES_DAILY&symbol=${encodeURIComponent(symbol)}&outputsize=compact&apikey=${API_KEY}`;
-  const data = await fetchWithCache(url, `daily-${symbol}.json`);
+  const data = await fetchWithCache(url, `daily-${symbol}.json`, DAILY_TTL);
 
   const timeSeries = data["Time Series (Daily)"] as Record<string, RawTimeSeriesEntry> | undefined;
   if (!timeSeries) return [];

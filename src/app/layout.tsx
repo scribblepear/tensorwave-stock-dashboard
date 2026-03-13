@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Footer } from "@/components/Footer";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Stock Dashboard — TensorWave",
-  description: "Track stock prices and company information",
+  title: "TensorWave Markets",
+  description: "Real-time prices, trends, and analysis for top stocks",
 };
 
 export default function RootLayout({
@@ -25,9 +26,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background font-sans text-foreground antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} relative min-h-screen bg-background font-sans text-foreground antialiased`}
       >
+        <div className="dot-grid pointer-events-none fixed inset-0 -z-10" aria-hidden="true" />
         {children}
+        <Footer />
       </body>
     </html>
   );

@@ -17,28 +17,31 @@ export function RevealText({
   intervalMs = 40,
   startDelay = 300,
 }: RevealTextProps) {
-  const words = text.split(/(\s+)/); // preserve whitespace
+  const words = text.split(/(\s+)/);
   const [visibleCount, setVisibleCount] = useState(0);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval>>(null);
 
   useEffect(() => {
     const totalWords = words.filter((w) => w.trim()).length;
+    setVisibleCount(0);
 
     timerRef.current = setTimeout(() => {
       let revealed = 0;
-      const interval = setInterval(() => {
+      intervalRef.current = setInterval(() => {
         revealed += wordsPerTick;
         setVisibleCount(revealed);
-        if (revealed >= totalWords) clearInterval(interval);
+        if (revealed >= totalWords) {
+          if (intervalRef.current) clearInterval(intervalRef.current);
+        }
       }, intervalMs);
-
-      return () => clearInterval(interval);
     }, startDelay);
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [words.length, wordsPerTick, intervalMs, startDelay]);
+  }, [text, wordsPerTick, intervalMs, startDelay]);
 
   let wordIndex = 0;
 

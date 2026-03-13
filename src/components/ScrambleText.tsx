@@ -14,13 +14,10 @@ type ScrambleTextProps = {
 export function ScrambleText({ text, className = "", delay = 0, duration = 1500 }: ScrambleTextProps) {
   // Start with real text to avoid hydration mismatch
   const [displayed, setDisplayed] = useState(text);
-  const [started, setStarted] = useState(false);
   const frameRef = useRef<number>(0);
   const lastTickRef = useRef(0);
 
   useEffect(() => {
-    // Kick off scramble on mount
-    setStarted(true);
     const startTime = performance.now() + delay;
     const TICK_INTERVAL = 50;
 

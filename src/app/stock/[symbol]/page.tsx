@@ -20,8 +20,10 @@ export default async function StockPage({ params }: StockPageProps) {
 
   if (!stock) notFound();
 
-  const overview = await fetchCompanyOverview(upperSymbol);
-  const prices = await fetchDailyPrices(upperSymbol);
+  const [overview, prices] = await Promise.all([
+    fetchCompanyOverview(upperSymbol),
+    fetchDailyPrices(upperSymbol),
+  ]);
 
   const latestPrice = prices[0];
   const isPositive = latestPrice ? latestPrice.percentChange >= 0 : true;
@@ -35,12 +37,20 @@ export default async function StockPage({ params }: StockPageProps) {
   ];
 
   return (
-    <main className="animate-fade-in-up mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+    <main className="relative animate-fade-in-up mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+      <div
+        className="pointer-events-none fixed inset-0 -z-10"
+        style={{ background: "linear-gradient(135deg, oklch(from var(--primary) l c h / 0.025) 0%, transparent 40%, transparent 60%, oklch(from var(--primary) l c h / 0.015) 100%)" }}
+        aria-hidden="true"
+      />
       <Link
         href="/"
-        className="mb-8 inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-primary"
+        className="mb-8 inline-flex items-center gap-1.5 rounded-lg border border-border/50 bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
       >
-        ← Back to Dashboard
+        <svg className="h-3 w-3" style={{ color: "var(--color-primary)" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        Dashboard
       </Link>
 
       {/* Header */}
@@ -60,7 +70,8 @@ export default async function StockPage({ params }: StockPageProps) {
             <h1 className="text-3xl font-bold tracking-tight lg:text-4xl">
               <ScrambleText text={overview?.Name ?? stock.name} duration={1500} />
             </h1>
-            <span className="text-3xl font-bold tracking-tight text-muted-foreground lg:text-4xl">
+            <span className="mx-2.5 h-7 w-[2px] shrink-0 rounded-full bg-border self-center" />
+            <span className="text-3xl font-bold tracking-tight lg:text-4xl" style={{ color: "var(--color-primary)" }}>
               <ScrambleText text={upperSymbol} delay={400} duration={800} />
             </span>
             {latestPrice && (
@@ -69,9 +80,17 @@ export default async function StockPage({ params }: StockPageProps) {
                 <AnimatedPrice
                   value={latestPrice.close}
                   isPositive={isPositive}
-                  className="text-3xl font-bold tabular-nums lg:text-4xl"
+                  className="text-4xl font-bold tabular-nums tracking-tight lg:text-5xl"
                 />
-                <span className={`text-sm font-semibold tabular-nums ${isPositive ? "text-positive" : "text-negative"}`}>
+                <span
+                  className="rounded px-1.5 py-0.5 text-sm font-semibold tabular-nums"
+                  style={{
+                    backgroundColor: isPositive
+                      ? "color-mix(in oklch, var(--color-positive) 15%, transparent)"
+                      : "color-mix(in oklch, var(--color-negative) 15%, transparent)",
+                    color: isPositive ? "var(--color-positive)" : "var(--color-negative)",
+                  }}
+                >
                   {isPositive ? "+" : ""}{latestPrice.percentChange.toFixed(2)}%
                 </span>
               </>
@@ -83,7 +102,8 @@ export default async function StockPage({ params }: StockPageProps) {
               <h1 className="text-lg font-bold tracking-tight">
                 <ScrambleText text={overview?.Name ?? stock.name} duration={1500} />
               </h1>
-              <span className="text-lg font-bold tracking-tight text-muted-foreground">
+              <span className="mx-1.5 h-4 w-[2px] shrink-0 rounded-full bg-border self-center" />
+              <span className="text-lg font-bold tracking-tight" style={{ color: "var(--color-primary)" }}>
                 <ScrambleText text={upperSymbol} delay={400} duration={800} />
               </span>
             </div>
@@ -92,9 +112,17 @@ export default async function StockPage({ params }: StockPageProps) {
                 <AnimatedPrice
                   value={latestPrice.close}
                   isPositive={isPositive}
-                  className="text-xl font-bold tabular-nums"
+                  className="text-2xl font-bold tabular-nums tracking-tight"
                 />
-                <span className={`text-xs font-semibold tabular-nums ${isPositive ? "text-positive" : "text-negative"}`}>
+                <span
+                  className="rounded px-1.5 py-0.5 text-xs font-semibold tabular-nums"
+                  style={{
+                    backgroundColor: isPositive
+                      ? "color-mix(in oklch, var(--color-positive) 15%, transparent)"
+                      : "color-mix(in oklch, var(--color-negative) 15%, transparent)",
+                    color: isPositive ? "var(--color-positive)" : "var(--color-negative)",
+                  }}
+                >
                   {isPositive ? "+" : ""}{latestPrice.percentChange.toFixed(2)}%
                 </span>
               </div>
@@ -103,10 +131,10 @@ export default async function StockPage({ params }: StockPageProps) {
         </div>
       </div>
 
-      {/* Stat bar — scrolling ticker */}
-      <div className="relative mb-6 overflow-hidden py-2">
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-background to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-background to-transparent" />
+      {/* Stat bar — scrolling ticker in bento container */}
+      <div className="relative z-10 mb-6 overflow-hidden rounded-xl border border-border/40 bg-muted py-3">
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-muted to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-muted to-transparent" />
         <div className="animate-stat-ticker flex whitespace-nowrap text-sm text-muted-foreground">
           {[0, 1].map((copy) => (
             <div key={copy} className="flex shrink-0 items-center">
@@ -114,7 +142,7 @@ export default async function StockPage({ params }: StockPageProps) {
                 <span key={`${copy}-${i}`} className="flex items-baseline">
                   {i > 0 && <span className="mx-3 text-border/50 select-none">|</span>}
                   <span className="font-semibold text-foreground">{stat.value ?? "N/A"}</span>
-                  <span className="ml-1.5 text-[11px] text-muted-foreground/60">{stat.label}</span>
+                  <span className="ml-1.5 text-[10px] uppercase tracking-widest text-muted-foreground/50">{stat.label}</span>
                 </span>
               ))}
               <span className="mx-3 text-border/50 select-none">|</span>

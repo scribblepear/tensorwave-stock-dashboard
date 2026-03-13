@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useMemo, useCallback } from "react";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, ReferenceLine } from "recharts";
 import { type DailyPrice } from "@/lib/alpha-vantage";
-import { format, parseISO, subDays, subMonths } from "date-fns";
+import { format, parseISO, subDays } from "date-fns";
 
-const RANGES = [
+export const RANGES = [
   { label: "1W", days: 7 },
   { label: "1M", days: 30 },
   { label: "3M", days: 90 },
@@ -25,6 +25,10 @@ type ChartDataPoint = {
 type PriceChartProps = {
   prices: DailyPrice[];
   onHoverDate?: (date: string | null) => void;
+  activeDate?: string | null;
+  selectedDate?: string | null;
+  range: string;
+  onRangeChange: (range: string) => void;
 };
 
 function CustomTooltip({ active, payload }: { active?: boolean; payload?: { payload: ChartDataPoint }[] }) {
@@ -53,10 +57,7 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: { payl
   );
 }
 
-export function PriceChart({ prices, onHoverDate }: PriceChartProps) {
-  const [range, setRange] = useState("6M");
-  const [activeDate, setActiveDate] = useState<string | null>(null);
-
+export function PriceChart({ prices, onHoverDate, activeDate, selectedDate, range, onRangeChange }: PriceChartProps) {
   const chartData = useMemo(() => {
     const allData: ChartDataPoint[] = [...prices].reverse().map((p) => ({
       date: p.date,
@@ -68,14 +69,10 @@ export function PriceChart({ prices, onHoverDate }: PriceChartProps) {
       percentChange: p.percentChange,
     }));
 
-    if (range === "All") return allData;
-
     const selected = RANGES.find((r) => r.label === range);
     if (!selected || selected.days === 0) return allData;
 
-    const cutoff = selected.days <= 180
-      ? subDays(new Date(), selected.days)
-      : subMonths(new Date(), 12);
+    const cutoff = subDays(new Date(), selected.days);
 
     return allData.filter((d) => parseISO(d.date) >= cutoff);
   }, [prices, range]);
@@ -91,14 +88,12 @@ export function PriceChart({ prices, onHoverDate }: PriceChartProps) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (state: any) => {
       const date = state?.activeLabel ? String(state.activeLabel) : null;
-      setActiveDate(date);
       onHoverDate?.(date);
     },
     [onHoverDate],
   );
 
   const handleMouseLeave = useCallback(() => {
-    setActiveDate(null);
     onHoverDate?.(null);
   }, [onHoverDate]);
 
@@ -109,7 +104,7 @@ export function PriceChart({ prices, onHoverDate }: PriceChartProps) {
         {RANGES.map((r) => (
           <button
             key={r.label}
-            onClick={() => setRange(r.label)}
+            onClick={() => onRangeChange(r.label)}
             className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
               range === r.label
                 ? "bg-foreground text-background"
@@ -152,17 +147,26 @@ export function PriceChart({ prices, onHoverDate }: PriceChartProps) {
               axisLine={false}
               tickLine={false}
             />
-            <Tooltip
-              content={<CustomTooltip />}
-              cursor={{ stroke: "var(--muted-foreground)", strokeWidth: 1, strokeDasharray: "4 4" }}
-              isAnimationActive={false}
-            />
-            {activeDate && (
+            {!selectedDate && (
+              <Tooltip
+                content={<CustomTooltip />}
+                cursor={{ stroke: "var(--muted-foreground)", strokeWidth: 1, strokeDasharray: "4 4" }}
+                isAnimationActive={false}
+              />
+            )}
+            {activeDate && chartData.some((d) => d.date === activeDate) && (
               <ReferenceLine
                 x={activeDate}
-                stroke="var(--muted-foreground)"
+                stroke="var(--color-primary)"
+                strokeWidth={2}
                 strokeDasharray="4 4"
-                strokeOpacity={0.6}
+                label={selectedDate ? {
+                  value: `${format(parseISO(activeDate), "MMM d")}  $${chartData.find((d) => d.date === activeDate)?.close.toFixed(2) ?? ""}`,
+                  position: "top",
+                  fill: "var(--foreground)",
+                  fontSize: 12,
+                  fontWeight: 600,
+                } : undefined}
               />
             )}
             <Area
@@ -172,7 +176,7 @@ export function PriceChart({ prices, onHoverDate }: PriceChartProps) {
               strokeWidth={2}
               fill="url(#priceGradient)"
               dot={false}
-              activeDot={{ r: 5, fill: strokeColor, stroke: "#fff", strokeWidth: 2, className: "animate-active-dot" }}
+              activeDot={selectedDate ? false : { r: 5, fill: strokeColor, stroke: "#fff", strokeWidth: 2, className: "animate-active-dot" }}
             />
           </AreaChart>
         </ResponsiveContainer>

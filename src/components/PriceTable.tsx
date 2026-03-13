@@ -8,9 +8,10 @@ import { Card } from "@/components/ui/card";
 type PriceTableProps = {
   prices: DailyPrice[];
   highlightedDate?: string | null;
+  onClickDate?: (date: string | null) => void;
 };
 
-export function PriceTable({ prices, highlightedDate }: PriceTableProps) {
+export function PriceTable({ prices, highlightedDate, onClickDate }: PriceTableProps) {
   const rowRefs = useRef<Map<string, HTMLTableRowElement>>(new Map());
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -43,7 +44,8 @@ export function PriceTable({ prices, highlightedDate }: PriceTableProps) {
                   ref={(el) => {
                     if (el) rowRefs.current.set(price.date, el);
                   }}
-                  className={`border-b border-border last:border-0 transition-colors duration-100 ${
+                  onClick={() => onClickDate?.(isHighlighted ? null : price.date)}
+                  className={`cursor-pointer border-b border-border last:border-0 transition-colors duration-100 hover:bg-muted/50 ${
                     isHighlighted
                       ? "bg-primary/15 shadow-[inset_3px_0_0_var(--color-primary)]"
                       : ""
