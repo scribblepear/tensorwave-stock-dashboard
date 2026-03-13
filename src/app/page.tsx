@@ -62,6 +62,54 @@ function loadMarketCap(symbol: string): string {
   return raw.MarketCapitalization ?? "0";
 }
 
+type OverviewJson = {
+  Name?: string;
+  Symbol?: string;
+  Sector?: string;
+  Description?: string;
+};
+
+function loadCompanyInfo(symbol: string) {
+  const filePath = path.join(process.cwd(), "src", "data", "mock", `overview-${symbol}.json`);
+
+  if (!fs.existsSync(filePath)) {
+    return { name: symbol, symbol, sector: "Unknown", description: "" };
+  }
+
+  const raw = JSON.parse(fs.readFileSync(filePath, "utf-8")) as OverviewJson;
+
+  return {
+    name: raw.Name ?? symbol,
+    symbol: raw.Symbol ?? symbol,
+    sector: raw.Sector ?? "Unknown",
+    description: raw.Description ?? "",
+  };
+}
+
+function loadTableData(symbol: string) {
+  const filePath = path.join(process.cwd(), "src", "data", "mock", `daily-${symbol}.json`);
+
+  if (!fs.existsSync(filePath)) return [];
+
+  const raw = JSON.parse(fs.readFileSync(filePath, "utf-8")) as {
+    "Time Series (Daily)"?: Record<string, RawTimeSeriesEntry>;
+  };
+
+  const timeSeries = raw["Time Series (Daily)"];
+  if (!timeSeries) return [];
+
+  return Object.entries(timeSeries)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .slice(-8)
+    .map(([date, v]) => ({
+      date,
+      close: parseFloat(v["4. close"]),
+      high: parseFloat(v["2. high"]),
+      low: parseFloat(v["3. low"]),
+      volume: v["5. volume"],
+    }));
+}
+
 export default function HomePage() {
   const { isOpen, label } = getMarketStatus();
   const formattedDate = formatMarketDate();
@@ -80,10 +128,16 @@ export default function HomePage() {
   const totalMarketCap = formatMarketCap(String(totalMarketCapNum));
 
   const heroPrices = loadAllPrices("AMD");
+  const heroCompanyInfo = loadCompanyInfo("AMD");
+  const heroTableData = loadTableData("AMD");
 
   return (
     <>
-      <HeroSection prices={heroPrices} />
+      <HeroSection
+        prices={heroPrices}
+        companyInfo={heroCompanyInfo}
+        tableData={heroTableData}
+      />
 
       <main id="dashboard" className="mx-auto max-w-5xl px-4 py-16 pb-20 sm:px-6 lg:px-8">
         <HomeContent
