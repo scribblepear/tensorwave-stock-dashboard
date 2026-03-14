@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { format, parseISO } from "date-fns";
 
 type CandleData = {
@@ -17,16 +17,19 @@ type CandlestickChartProps = {
   onHoverDate?: (date: string | null) => void;
 };
 
-type HoveredCandle = CandleData & { x: number; y: number };
+type HoveredCandle = CandleData & { x: number; y: number; containerW: number };
 
 function CandleTooltip({ candle }: { candle: HoveredCandle }) {
   const bullish = candle.close >= candle.open;
   return (
     <div
-      className="pointer-events-none absolute z-10 rounded-lg border border-white/30 bg-white/80 px-3 py-2 text-xs shadow-lg backdrop-blur-xl"
-      style={{ left: candle.x + 12, top: candle.y - 60 }}
+      className="pointer-events-none absolute z-10 rounded-lg border border-border/30 bg-background/90 px-3 py-2 text-xs shadow-lg backdrop-blur-xl"
+      style={{
+        left: candle.x > candle.containerW * 0.7 ? candle.x - 140 : candle.x + 12,
+        top: candle.y - 60,
+      }}
     >
-      <div className="mb-1 text-muted-foreground">
+      <div className="mb-1 font-medium text-muted-foreground">
         {format(parseISO(candle.date), "MMM d, yyyy")}
       </div>
       <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 tabular-nums">
@@ -47,120 +50,148 @@ function CandleTooltip({ candle }: { candle: HoveredCandle }) {
 
 export function CandlestickChart({ data, onHoverDate }: CandlestickChartProps) {
   const [hovered, setHovered] = useState<HoveredCandle | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const { yMin, yMax } = useMemo(() => {
-    if (!data.length) return { yMin: 0, yMax: 1 };
-    const lows = data.map((d) => d.low);
-    const highs = data.map((d) => d.high);
-    const lo = Math.min(...lows);
-    const hi = Math.max(...highs);
-    const pad = (hi - lo) * 0.08 || 1;
-    return { yMin: lo - pad, yMax: hi + pad };
+  const { yMin, yMax, yTicks } = useMemo(() => {
+    if (!data.length) return { yMin: 0, yMax: 1, yTicks: [] };
+    const lo = Math.min(...data.map((d) => d.low));
+    const hi = Math.max(...data.map((d) => d.high));
+    const range = hi - lo || 1;
+    const step = [1, 2, 5, 10, 25, 50, 100, 250].find((s) => range / s <= 4) ?? 50;
+    const min = Math.floor(lo / step) * step;
+    const max = Math.ceil(hi / step) * step;
+    const ticks: number[] = [];
+    for (let v = min; v <= max; v += step) ticks.push(v);
+    return { yMin: min, yMax: max, yTicks: ticks };
   }, [data]);
 
-  const padding = { top: 8, right: 8, bottom: 24, left: 48 };
+  const xLabels = useMemo(() => {
+    if (data.length <= 1) return [];
+    const count = Math.min(5, data.length);
+    const interval = Math.max(1, Math.floor(data.length / count));
+    return data
+      .map((d, i) => ({ date: d.date, i, pct: (i + 0.5) / data.length }))
+      .filter((_, i) => i % interval === 0 && i > 0 && i < data.length - 1);
+  }, [data]);
+
+  const toYPct = (val: number): number => (1 - (val - yMin) / (yMax - yMin)) * 100;
+
+  const handleTouch = useCallback(
+    (e: React.TouchEvent) => {
+      const touch = e.touches[0];
+      if (!touch || !containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const chartLeft = 44;
+      const chartW = rect.width - chartLeft;
+      const relX = touch.clientX - rect.left - chartLeft;
+      const idx = Math.floor((relX / chartW) * data.length);
+      const d = data[Math.max(0, Math.min(idx, data.length - 1))];
+      if (!d) return;
+      const centerPct = (Math.max(0, Math.min(idx, data.length - 1)) + 0.5) / data.length;
+      setHovered({
+        ...d,
+        x: chartLeft + centerPct * chartW,
+        y: (toYPct(d.high) / 100) * (rect.height - 20),
+        containerW: rect.width,
+      });
+      onHoverDate?.(d.date);
+    },
+    [data, onHoverDate, toYPct],
+  );
 
   return (
-    <div className="relative h-64 w-full sm:h-72">
+    <div className="relative h-64 w-full sm:h-72" ref={containerRef}>
       {hovered && <CandleTooltip candle={hovered} />}
-      <svg
-        className="h-full w-full"
-        viewBox="0 0 800 300"
-        preserveAspectRatio="none"
+
+      <div className="absolute inset-y-0 left-0 flex w-11 flex-col justify-between py-1 pr-1.5">
+        {[...yTicks].reverse().map((val) => (
+          <span key={val} className="text-right text-[10px] tabular-nums text-muted-foreground">
+            ${val.toFixed(0)}
+          </span>
+        ))}
+      </div>
+
+      <div
+        className="absolute inset-0 cursor-crosshair"
+        style={{ left: 44, bottom: 20 }}
         onMouseLeave={() => { setHovered(null); onHoverDate?.(null); }}
+        onTouchMove={handleTouch}
+        onTouchEnd={() => { setHovered(null); onHoverDate?.(null); }}
       >
-        <YAxis yMin={yMin} yMax={yMax} padding={padding} />
-        <XAxis data={data} padding={padding} />
-        {data.map((d, i) => {
-          const count = data.length;
-          const plotW = 800 - padding.left - padding.right;
-          const plotH = 300 - padding.top - padding.bottom;
-          const candleW = Math.max(2, (plotW / count) * 0.7);
-          const gap = plotW / count;
-          const x = padding.left + gap * i + gap / 2;
+        <svg className="h-full w-full" preserveAspectRatio="none">
+          {yTicks.map((val) => (
+            <line
+              key={val}
+              x1="0" x2="100%"
+              y1={`${toYPct(val)}%`} y2={`${toYPct(val)}%`}
+              stroke="var(--border)" strokeOpacity={0.3} strokeDasharray="3 3"
+              vectorEffect="non-scaling-stroke"
+            />
+          ))}
 
-          const toY = (val: number): number =>
-            padding.top + plotH * (1 - (val - yMin) / (yMax - yMin));
+          {data.map((d, i) => {
+            const count = data.length;
+            const widthPct = 100 / count;
+            const centerPct = (i + 0.5) * widthPct;
+            const candleWidthPct = widthPct * 0.65;
 
-          const bullish = d.close >= d.open;
-          const bodyTop = toY(Math.max(d.open, d.close));
-          const bodyBottom = toY(Math.min(d.open, d.close));
-          const bodyH = Math.max(1, bodyBottom - bodyTop);
-          const color = bullish ? "var(--color-positive)" : "var(--color-negative)";
+            const bullish = d.close >= d.open;
+            const bodyTopPct = toYPct(Math.max(d.open, d.close));
+            const bodyBottomPct = toYPct(Math.min(d.open, d.close));
+            const color = bullish ? "var(--color-positive)" : "var(--color-negative)";
 
-          return (
-            <g
-              key={d.date}
-              onMouseEnter={(e) => {
-                const svg = e.currentTarget.closest("svg");
-                const rect = svg?.getBoundingClientRect();
-                setHovered({
-                  ...d,
-                  x: rect ? (x / 800) * rect.width : 0,
-                  y: rect ? (toY(d.high) / 300) * rect.height : 0,
-                });
-                onHoverDate?.(d.date);
-              }}
-              style={{ cursor: "crosshair" }}
-            >
-              <line
-                x1={x} y1={toY(d.high)} x2={x} y2={toY(d.low)}
-                stroke={color} strokeWidth={1}
-              />
-              <rect
-                x={x - candleW / 2} y={bodyTop}
-                width={candleW} height={bodyH}
-                fill={bullish ? color : color}
-                stroke={color} strokeWidth={0.5}
-                rx={0.5}
-              />
-              <rect
-                x={x - gap / 2} y={padding.top}
-                width={gap} height={300 - padding.top - padding.bottom}
-                fill="transparent"
-              />
-            </g>
-          );
-        })}
-      </svg>
+            return (
+              <g
+                key={d.date}
+                onMouseEnter={(e) => {
+                  const rect = containerRef.current?.getBoundingClientRect();
+                  if (!rect) return;
+                  const svgRect = e.currentTarget.closest("svg")?.getBoundingClientRect();
+                  if (!svgRect) return;
+                  setHovered({
+                    ...d,
+                    x: svgRect.left - rect.left + (svgRect.width * centerPct) / 100,
+                    y: svgRect.top - rect.top + (svgRect.height * toYPct(d.high)) / 100,
+                    containerW: rect.width,
+                  });
+                  onHoverDate?.(d.date);
+                }}
+              >
+                <line
+                  x1={`${centerPct}%`} x2={`${centerPct}%`}
+                  y1={`${toYPct(d.high)}%`} y2={`${toYPct(d.low)}%`}
+                  stroke={color} strokeWidth={1} vectorEffect="non-scaling-stroke"
+                />
+                <rect
+                  x={`${centerPct - candleWidthPct / 2}%`}
+                  y={`${bodyTopPct}%`}
+                  width={`${candleWidthPct}%`}
+                  height={`${Math.max(0.3, bodyBottomPct - bodyTopPct)}%`}
+                  fill={color}
+                  rx={1}
+                />
+                <rect
+                  x={`${i * widthPct}%`} y="0"
+                  width={`${widthPct}%`} height="100%"
+                  fill="transparent"
+                />
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+
+      <div className="absolute bottom-0 flex h-5" style={{ left: 44, right: 0 }}>
+        {xLabels.map(({ date, pct }) => (
+          <span
+            key={date}
+            className="absolute text-[10px] text-muted-foreground"
+            style={{ left: `${pct * 100}%`, transform: "translateX(-50%)" }}
+          >
+            {format(parseISO(date), "MMM d")}
+          </span>
+        ))}
+      </div>
     </div>
-  );
-}
-
-function YAxis({ yMin, yMax, padding }: { yMin: number; yMax: number; padding: { top: number; bottom: number; left: number } }) {
-  const ticks = 5;
-  const plotH = 300 - padding.top - padding.bottom;
-  return (
-    <>
-      {Array.from({ length: ticks }).map((_, i) => {
-        const val = yMin + ((yMax - yMin) * i) / (ticks - 1);
-        const y = padding.top + plotH * (1 - i / (ticks - 1));
-        return (
-          <g key={i}>
-            <line x1={padding.left} y1={y} x2={800 - 8} y2={y} stroke="var(--border)" strokeOpacity={0.4} strokeDasharray="3 3" />
-            <text x={padding.left - 6} y={y + 3} textAnchor="end" fontSize={10} fill="var(--muted-foreground)">${val.toFixed(0)}</text>
-          </g>
-        );
-      })}
-    </>
-  );
-}
-
-function XAxis({ data, padding }: { data: CandleData[]; padding: { top: number; bottom: number; left: number; right: number } }) {
-  const interval = Math.max(1, Math.floor(data.length / 6));
-  const plotW = 800 - padding.left - padding.right;
-  const gap = plotW / data.length;
-  return (
-    <>
-      {data.map((d, i) => {
-        if (i % interval !== 0) return null;
-        const x = padding.left + gap * i + gap / 2;
-        return (
-          <text key={d.date} x={x} y={300 - 4} textAnchor="middle" fontSize={10} fill="var(--muted-foreground)">
-            {format(parseISO(d.date), "MMM d")}
-          </text>
-        );
-      })}
-    </>
   );
 }
