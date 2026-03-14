@@ -34,7 +34,7 @@ type RawTimeSeriesEntry = {
 };
 
 const OVERVIEW_TTL = 30 * 24 * 60 * 60 * 1000;
-const DAILY_TTL = 24 * 60 * 60 * 1000;
+const DAILY_TTL = 30 * 24 * 60 * 60 * 1000;
 const MOCK_DIR = join(process.cwd(), "src", "data", "mock");
 
 function readMockFile(filename: string): { data: Record<string, unknown>; mtime: number } | null {

@@ -201,11 +201,11 @@ export function HomeContent({
       </div>
 
       {filtered.length === 0 ? (
-        <div className="py-16 text-center text-muted-foreground">No stocks match your search.</div>
+        <div className="min-h-[60vh] py-16 text-center text-muted-foreground">No stocks match your search.</div>
       ) : (
         <div
           ref={gridRef}
-          className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${gridVisible ? "animate-fade-in-up-stagger" : ""}`}
+          className={`min-h-[60vh] grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${gridVisible ? "animate-fade-in-up-stagger" : ""}`}
         >
           {filtered.map((item) => (
             <StockCard
