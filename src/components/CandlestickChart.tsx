@@ -14,6 +14,7 @@ type CandleData = {
 
 type CandlestickChartProps = {
   data: CandleData[];
+  onHoverDate?: (date: string | null) => void;
 };
 
 type HoveredCandle = CandleData & { x: number; y: number };
@@ -44,7 +45,7 @@ function CandleTooltip({ candle }: { candle: HoveredCandle }) {
   );
 }
 
-export function CandlestickChart({ data }: CandlestickChartProps) {
+export function CandlestickChart({ data, onHoverDate }: CandlestickChartProps) {
   const [hovered, setHovered] = useState<HoveredCandle | null>(null);
 
   const { yMin, yMax } = useMemo(() => {
@@ -66,7 +67,7 @@ export function CandlestickChart({ data }: CandlestickChartProps) {
         className="h-full w-full"
         viewBox="0 0 800 300"
         preserveAspectRatio="none"
-        onMouseLeave={() => setHovered(null)}
+        onMouseLeave={() => { setHovered(null); onHoverDate?.(null); }}
       >
         <YAxis yMin={yMin} yMax={yMax} padding={padding} />
         <XAxis data={data} padding={padding} />
@@ -98,6 +99,7 @@ export function CandlestickChart({ data }: CandlestickChartProps) {
                   x: rect ? (x / 800) * rect.width : 0,
                   y: rect ? (toY(d.high) / 300) * rect.height : 0,
                 });
+                onHoverDate?.(d.date);
               }}
               style={{ cursor: "crosshair" }}
             >

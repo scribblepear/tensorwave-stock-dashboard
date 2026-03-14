@@ -127,7 +127,7 @@ export function PriceChart({ prices, onHoverDate, activeDate, selectedDate, rang
       </div>
 
       {chartMode === "candle" ? (
-        <CandlestickChart data={chartData} />
+        <CandlestickChart data={chartData} onHoverDate={onHoverDate} />
       ) : (
       <div className="h-64 w-full sm:h-72 [&_.recharts-wrapper]:!cursor-crosshair">
         <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
