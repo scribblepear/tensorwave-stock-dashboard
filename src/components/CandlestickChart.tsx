@@ -25,8 +25,11 @@ function CandleTooltip({ candle }: { candle: HoveredCandle }) {
     <div
       className="pointer-events-none absolute z-10 rounded-lg border border-border/30 bg-background/90 px-3 py-2 text-xs shadow-lg backdrop-blur-xl"
       style={{
-        left: candle.x > candle.containerW * 0.7 ? candle.x - 140 : candle.x + 12,
-        top: candle.y - 60,
+        left: Math.min(
+          candle.x > candle.containerW * 0.7 ? candle.x - 140 : candle.x + 12,
+          candle.containerW - 150,
+        ),
+        top: Math.max(0, candle.y - 100),
       }}
     >
       <div className="mb-1 font-medium text-muted-foreground">

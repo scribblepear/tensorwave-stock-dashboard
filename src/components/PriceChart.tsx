@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useRef } from "react";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, ReferenceLine, type MouseHandlerDataParam } from "recharts";
 import { type DailyPrice } from "@/lib/alpha-vantage";
 import { CandlestickChart } from "@/components/CandlestickChart";
@@ -91,6 +91,23 @@ export function PriceChart({ prices, onHoverDate, activeDate, selectedDate, rang
   const handleMouseLeave = useCallback(() => {
     onHoverDate?.(null);
   }, [onHoverDate]);
+
+  const lineChartRef = useRef<HTMLDivElement>(null);
+  const handleLineTouch = useCallback(
+    (e: React.TouchEvent) => {
+      const touch = e.touches[0];
+      if (!touch || !lineChartRef.current) return;
+      const rect = lineChartRef.current.getBoundingClientRect();
+      const margin = 35;
+      const relX = touch.clientX - rect.left - margin;
+      const chartW = rect.width - margin - 5;
+      const idx = Math.round((relX / chartW) * (chartData.length - 1));
+      const clamped = Math.max(0, Math.min(idx, chartData.length - 1));
+      onHoverDate?.(chartData[clamped]?.date ?? null);
+    },
+    [chartData, onHoverDate],
+  );
+
   return (
     <div>
       <div className="mb-3 flex items-center justify-between">
@@ -129,7 +146,12 @@ export function PriceChart({ prices, onHoverDate, activeDate, selectedDate, rang
       {chartMode === "candle" ? (
         <CandlestickChart data={chartData} onHoverDate={onHoverDate} />
       ) : (
-      <div className="h-64 w-full sm:h-72 [&_.recharts-wrapper]:!cursor-crosshair">
+      <div
+        ref={lineChartRef}
+        className="h-64 w-full sm:h-72 [&_.recharts-wrapper]:!cursor-crosshair"
+        onTouchMove={handleLineTouch}
+        onTouchEnd={handleMouseLeave}
+      >
         <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
           <AreaChart
             data={chartData}
