@@ -65,8 +65,8 @@ export function CandlestickChart({ data, onHoverDate }: CandlestickChartProps) {
   );
 
   return (
-    <div className="relative h-64 w-full sm:h-72" ref={containerRef}>
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex h-6 items-center justify-center gap-3 text-xs tabular-nums">
+    <div className="w-full" ref={containerRef}>
+      <div className="pointer-events-none flex h-6 items-center justify-center gap-3 text-xs tabular-nums">
         {hovered ? (
           <>
             <span className="font-medium text-muted-foreground">
@@ -90,6 +90,7 @@ export function CandlestickChart({ data, onHoverDate }: CandlestickChartProps) {
         )}
       </div>
 
+      <div className="relative h-56 w-full sm:h-64">
       <div className="absolute inset-y-0 left-0 flex w-11 flex-col justify-between py-1 pr-1.5">
         {[...yTicks].reverse().map((val) => (
           <span key={val} className="text-right text-[10px] tabular-nums text-muted-foreground">
@@ -186,6 +187,7 @@ export function CandlestickChart({ data, onHoverDate }: CandlestickChartProps) {
             {format(parseISO(date), "MMM d")}
           </span>
         ))}
+      </div>
       </div>
     </div>
   );

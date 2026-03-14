@@ -46,12 +46,12 @@ export function HeroSection({ prices, companyInfo, tableData }: HeroSectionProps
       />
 
       <div className="flex h-full items-center">
-        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 px-8 md:grid-cols-[3fr_2fr]">
-          <div>
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-6 px-6 md:gap-12 md:px-8 md:grid-cols-[3fr_2fr]">
+          <div className="text-center md:text-left">
             <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground/70">
               Stock Dashboard
             </p>
-            <h1 className="text-6xl font-bold leading-[0.92] tracking-tight sm:text-7xl lg:text-8xl">
+            <h1 className="text-5xl font-bold leading-[0.92] tracking-tight sm:text-6xl md:text-7xl lg:text-8xl">
               <span style={{ color: "#8B4000" }}>
                 <ScrambleText text="TensorWave" duration={1200} />
               </span>
@@ -60,21 +60,23 @@ export function HeroSection({ prices, companyInfo, tableData }: HeroSectionProps
                 <ScrambleText text="Markets" delay={300} duration={900} />
               </span>
             </h1>
-            <p className="mt-7 max-w-md text-base leading-relaxed text-muted-foreground/80">
+            <p className="mx-auto mt-7 max-w-md text-base leading-relaxed text-muted-foreground/80 md:mx-0">
               Track prices and trends for 15 major stocks.
             </p>
 
           </div>
 
-          <HeroCard
-            currentStep={currentStep}
-            stepProgress={stepProgress}
-            prices={prices}
-            latestPrice={latestPrice}
-            change={change}
-            companyInfo={companyInfo}
-            tableData={tableData}
-          />
+          <div className="max-w-sm mx-auto md:max-w-none md:mx-0">
+            <HeroCard
+              currentStep={currentStep}
+              stepProgress={stepProgress}
+              prices={prices}
+              latestPrice={latestPrice}
+              change={change}
+              companyInfo={companyInfo}
+              tableData={tableData}
+            />
+          </div>
         </div>
       </div>
 
