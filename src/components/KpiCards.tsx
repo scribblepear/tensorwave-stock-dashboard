@@ -23,7 +23,7 @@ export function KpiCards({
   const total = Math.max(gainers + losers, 1);
 
   return (
-    <div className="mb-4 flex items-center gap-0 rounded-xl border border-border/50 bg-background/60 px-1 py-3">
+    <div className="mb-4 grid grid-cols-2 gap-3 rounded-xl border border-border/50 bg-background/60 px-3 py-3 sm:flex sm:items-center sm:gap-0 sm:px-1">
       <StatItem label="Market Cap">
         <span className="text-sm font-semibold tabular-nums">{totalMarketCap}</span>
       </StatItem>
@@ -95,5 +95,5 @@ function StatItem({ label, children }: { label: string; children: React.ReactNod
 }
 
 function Divider() {
-  return <div className="h-8 w-px shrink-0 bg-border" />;
+  return <div className="hidden h-8 w-px shrink-0 bg-border sm:block" />;
 }

@@ -126,7 +126,7 @@ export function PriceChart({ prices, onHoverDate, activeDate, selectedDate, rang
 
   return (
     <div>
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-1.5 flex items-center justify-between">
         <div className="flex gap-1">
           {RANGES.map((r) => (
             <button

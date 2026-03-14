@@ -29,14 +29,14 @@ export function PriceTable({ prices, highlightedDate, onClickDate }: PriceTableP
 
   return (
     <Card className="overflow-hidden">
-      <div ref={scrollRef} className="overflow-auto max-h-80 sm:max-h-[22rem]">
+      <div ref={scrollRef} className="overflow-auto max-h-[17.5rem] sm:max-h-[18rem]">
         <table className="w-full text-sm">
           <thead className="sticky top-0 z-10 bg-card border-b border-border">
             <tr>
-              <th className="py-2 px-3 text-center font-medium text-muted-foreground">Date</th>
-              <th className="py-2 px-3 text-center font-medium text-muted-foreground">Close</th>
-              <th className="py-2 px-3 text-center font-medium text-muted-foreground">Volume</th>
-              <th className="py-2 px-3 text-center font-medium text-muted-foreground">Change</th>
+              <th className="py-1 px-3 text-center text-xs font-medium text-muted-foreground">Date</th>
+              <th className="py-1 px-3 text-center text-xs font-medium text-muted-foreground">Close</th>
+              <th className="py-1 px-3 text-center text-xs font-medium text-muted-foreground">Volume</th>
+              <th className="py-1 px-3 text-center text-xs font-medium text-muted-foreground">Change</th>
             </tr>
           </thead>
           <tbody>
@@ -55,13 +55,13 @@ export function PriceTable({ prices, highlightedDate, onClickDate }: PriceTableP
                       : ""
                   }`}
                 >
-                  <td className="py-2 px-3 text-center font-medium whitespace-nowrap">
+                  <td className="py-1.5 px-3 text-center font-medium whitespace-nowrap">
                     {format(parseISO(price.date), "MMM d, yyyy")}
                   </td>
-                  <td className="py-2 px-3 text-center tabular-nums">
+                  <td className="py-1.5 px-3 text-center tabular-nums">
                     ${price.close.toFixed(2)}
                   </td>
-                  <td className="py-2 px-3 text-center tabular-nums">
+                  <td className="py-1.5 px-3 text-center tabular-nums">
                     {price.volume.toLocaleString()}
                   </td>
                   <td className={`py-2 px-3 text-center tabular-nums font-semibold ${

@@ -3,7 +3,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { STOCKS } from "@/data/stocks";
-import { format, parseISO } from "date-fns";
 import { fetchCompanyOverview, fetchDailyPrices, formatMarketCap } from "@/lib/alpha-vantage";
 import { PriceSection } from "@/components/PriceSection";
 import { AnimatedPrice } from "@/components/AnimatedPrice";
@@ -175,12 +174,6 @@ export default async function StockPage({ params }: StockPageProps) {
         </div>
       </div>
 
-      {latestPrice && (
-        <p className="mb-6 -mt-4 text-xs text-muted-foreground/60">
-          Data as of {format(parseISO(latestPrice.date), "MMM d, yyyy")}
-        </p>
-      )}
-
       {overview?.Description && overview.Description !== "None" && (
         <div className="mb-8">
           <h2 className="mb-2 text-lg font-semibold">Company Overview</h2>
@@ -189,7 +182,7 @@ export default async function StockPage({ params }: StockPageProps) {
       )}
 
       {prices.length > 0 && (
-        <PriceSection prices={prices} />
+        <PriceSection prices={prices} latestDate={latestPrice?.date} />
       )}
 
       {prices.length === 0 && (

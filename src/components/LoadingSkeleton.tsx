@@ -107,32 +107,29 @@ export function DetailsSkeleton() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
-          <div>
-            <div className="h-6 w-32 rounded bg-muted" />
-            <Card className="mt-4">
-              <CardContent className="flex h-80 items-center justify-center">
-                <ChartLineLoader />
-              </CardContent>
-            </Card>
+          <div className="rounded-xl border border-white/30 bg-white/60 shadow-sm px-4 pt-3 pb-2">
+            <div className="mb-2 h-3 w-24 rounded bg-muted" />
+            <div className="flex h-64 items-center justify-center">
+              <ChartLineLoader />
+            </div>
+            <div className="h-2.5 w-28 rounded bg-muted" />
           </div>
-          <div>
-            <div className="h-6 w-28 rounded bg-muted" />
-            <Card className="mt-4 h-80 sm:h-[22rem] overflow-hidden">
-              <CardContent className="space-y-3 p-4">
-                <div className="flex gap-4">
-                  {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="h-4 flex-1 rounded bg-muted" />
+          <div className="rounded-xl border border-white/30 bg-white/60 shadow-sm px-4 pt-3 pb-2">
+            <div className="mb-2 h-3 w-20 rounded bg-muted" />
+            <div className="space-y-2.5">
+              <div className="flex gap-4">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="h-3 flex-1 rounded bg-muted" />
+                ))}
+              </div>
+              {Array.from({ length: 7 }).map((_, i) => (
+                <div key={i} className="flex gap-4">
+                  {Array.from({ length: 4 }).map((_, j) => (
+                    <div key={j} className="h-3 flex-1 rounded bg-muted" />
                   ))}
                 </div>
-                {Array.from({ length: 10 }).map((_, i) => (
-                  <div key={i} className="flex gap-4">
-                    {Array.from({ length: 4 }).map((_, j) => (
-                      <div key={j} className="h-3 flex-1 rounded bg-muted" />
-                    ))}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+              ))}
+            </div>
           </div>
         </div>
 
