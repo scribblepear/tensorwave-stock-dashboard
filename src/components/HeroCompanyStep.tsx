@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo } from "react";
 
 type HeroCompanyStepProps = {
@@ -18,10 +19,12 @@ export function HeroCompanyStep({ progress, companyInfo }: HeroCompanyStepProps)
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-3">
-        <img
+        <Image
           src="https://assets.parqet.com/logos/symbol/AMD?format=png"
           alt="AMD logo"
-          className="h-10 w-10 rounded-lg object-contain"
+          width={40}
+          height={40}
+          className="rounded-lg object-contain"
         />
         <div>
           <p className="text-lg font-bold">{companyInfo.symbol}</p>

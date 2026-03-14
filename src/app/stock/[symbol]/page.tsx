@@ -1,7 +1,9 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { STOCKS } from "@/data/stocks";
+import { format, parseISO } from "date-fns";
 import { fetchCompanyOverview, fetchDailyPrices, formatMarketCap } from "@/lib/alpha-vantage";
 import { PriceSection } from "@/components/PriceSection";
 import { AnimatedPrice } from "@/components/AnimatedPrice";
@@ -14,6 +16,29 @@ import { readExtendedOverview } from "@/lib/extended-overview";
 type StockPageProps = {
   params: Promise<{ symbol: string }>;
 };
+
+export async function generateMetadata({ params }: StockPageProps): Promise<Metadata> {
+  const { symbol } = await params;
+  const upperSymbol = symbol.toUpperCase();
+  const stock = STOCKS.find((s) => s.symbol === upperSymbol);
+
+  if (!stock) {
+    return { title: "Stock Not Found" };
+  }
+
+  const title = `${stock.name} (${upperSymbol}) — TensorWave Stock Dashboard`;
+  const description = `Real-time price data, trends, and financial metrics for ${stock.name} (${upperSymbol})`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+    },
+  };
+}
 
 export default async function StockPage({ params }: StockPageProps) {
   const { symbol } = await params;
@@ -154,6 +179,12 @@ export default async function StockPage({ params }: StockPageProps) {
         </div>
       </div>
 
+      {latestPrice && (
+        <p className="mb-6 -mt-4 text-xs text-muted-foreground/60">
+          Data as of {format(parseISO(latestPrice.date), "MMM d, yyyy")}
+        </p>
+      )}
+
       {/* Company Overview */}
       {overview?.Description && overview.Description !== "None" && (
         <div className="mb-8">
@@ -169,9 +200,13 @@ export default async function StockPage({ params }: StockPageProps) {
 
       {prices.length === 0 && (
         <Card>
-          <CardContent className="p-8 text-center">
-            <p className="text-muted-foreground">
-              Price data is currently unavailable. This may be due to API rate limits.
+          <CardContent className="flex flex-col items-center gap-3 p-10 text-center">
+            <svg className="h-8 w-8 text-muted-foreground/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.5l4-4 4 4 4-6 4 4" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 3v18h18" />
+            </svg>
+            <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
+              Price data unavailable &mdash; the Alpha Vantage free tier allows 25 requests per day. Try again later or check back tomorrow.
             </p>
           </CardContent>
         </Card>

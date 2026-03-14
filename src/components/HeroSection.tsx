@@ -25,12 +25,6 @@ export type HeroSectionProps = {
   tableData: TableRow[];
 };
 
-const STEPS = [
-  "Company Intelligence",
-  "Price Analytics",
-  "Market Data",
-] as const;
-
 const TOTAL_STEPS = 3;
 
 export function HeroSection({ prices, companyInfo, tableData }: HeroSectionProps) {

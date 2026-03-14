@@ -76,8 +76,8 @@ export function useHeroScroll({ totalSteps }: UseHeroScrollOptions): UseHeroScro
     if (isMobile || alreadyPast) {
       lockedRef.current = false;
       releasedRef.current = true;
-      setCurrentStep(totalSteps - 1);
-      setStepProgress(1);
+      accumulatedRef.current = TOTAL_THRESHOLD;
+      queueMicrotask(() => updateFromScroll(TOTAL_THRESHOLD));
     } else {
       document.body.style.overflow = "hidden";
       window.scrollTo(0, 0);

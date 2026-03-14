@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 
 type RevealTextProps = {
   text: string;
@@ -17,7 +17,7 @@ export function RevealText({
   intervalMs = 40,
   startDelay = 300,
 }: RevealTextProps) {
-  const words = text.split(/(\s+)/);
+  const words = useMemo(() => text.split(/(\s+)/), [text]);
   const [visibleCount, setVisibleCount] = useState(0);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval>>(null);
@@ -41,7 +41,7 @@ export function RevealText({
       if (timerRef.current) clearTimeout(timerRef.current);
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [text, wordsPerTick, intervalMs, startDelay]);
+  }, [words, wordsPerTick, intervalMs, startDelay]);
 
   let wordIndex = 0;
 

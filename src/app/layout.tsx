@@ -14,8 +14,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TensorWave Markets",
-  description: "Real-time prices, trends, and analysis for top stocks",
+  title: "TensorWave Stock Dashboard",
+  description:
+    "Stock intelligence dashboard tracking 15 major stocks with real-time data from Alpha Vantage",
+  openGraph: {
+    title: "TensorWave Stock Dashboard",
+    description:
+      "Stock intelligence dashboard tracking 15 major stocks with real-time data from Alpha Vantage",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
