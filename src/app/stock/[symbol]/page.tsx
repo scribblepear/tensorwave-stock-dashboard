@@ -11,6 +11,7 @@ import { RevealText } from "@/components/RevealText";
 import { Card, CardContent } from "@/components/ui/card";
 import { FinancialMetrics } from "@/components/FinancialMetrics";
 import { readExtendedOverview } from "@/lib/extended-overview";
+import { ShareButton } from "@/components/ShareButton";
 
 type StockPageProps = {
   params: Promise<{ symbol: string }>;
@@ -70,15 +71,18 @@ export default async function StockPage({ params }: StockPageProps) {
         style={{ background: "linear-gradient(135deg, oklch(from var(--primary) l c h / 0.025) 0%, transparent 40%, transparent 60%, oklch(from var(--primary) l c h / 0.015) 100%)" }}
         aria-hidden="true"
       />
-      <Link
-        href="/"
-        className="mb-8 inline-flex items-center gap-1.5 rounded-lg border border-border/50 bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
-      >
-        <svg className="h-3 w-3" style={{ color: "var(--color-primary)" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-        </svg>
-        Dashboard
-      </Link>
+      <div className="mb-8 flex items-center gap-2">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border/50 bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+        >
+          <svg className="h-3 w-3" style={{ color: "var(--color-primary)" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          Dashboard
+        </Link>
+        <ShareButton />
+      </div>
 
       <div className="mb-5 flex items-center gap-4">
         <div className="relative h-14 w-14 shrink-0 sm:h-16 sm:w-16">

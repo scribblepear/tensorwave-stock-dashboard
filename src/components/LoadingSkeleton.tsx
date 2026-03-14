@@ -104,14 +104,14 @@ export function DetailsSkeleton() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
-          <div className="rounded-xl border border-white/30 bg-white/60 shadow-sm px-4 pt-3 pb-2">
+          <div className="rounded-xl border border-border/40 bg-card/80 shadow-sm px-4 pt-3 pb-2">
             <div className="mb-2 h-3 w-24 rounded bg-muted" />
             <div className="flex h-64 items-center justify-center">
               <ChartLineLoader />
             </div>
             <div className="h-2.5 w-28 rounded bg-muted" />
           </div>
-          <div className="rounded-xl border border-white/30 bg-white/60 shadow-sm px-4 pt-3 pb-2">
+          <div className="rounded-xl border border-border/40 bg-card/80 shadow-sm px-4 pt-3 pb-2">
             <div className="mb-2 h-3 w-20 rounded bg-muted" />
             <div className="space-y-2.5">
               <div className="flex gap-4">

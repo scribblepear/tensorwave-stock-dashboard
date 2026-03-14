@@ -52,7 +52,7 @@ export function HeroCard({
   return (
     <div className="hidden lg:flex lg:flex-col lg:items-end">
       <div
-        className="relative w-full max-w-[420px] rounded-2xl border border-white/40 bg-white/60 backdrop-blur-xl p-7 transition-all duration-1000 ease-out"
+        className="relative w-full max-w-[420px] rounded-2xl border border-border/40 bg-card/80 backdrop-blur-xl p-7 transition-all duration-1000 ease-out"
         style={{
           boxShadow:
             "0 25px 60px -12px rgba(0, 0, 0, 0.15), 0 12px 30px -8px rgba(0, 0, 0, 0.1)",

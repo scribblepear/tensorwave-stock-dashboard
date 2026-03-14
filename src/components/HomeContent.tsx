@@ -23,6 +23,30 @@ type HomeContentProps = {
   marketLabel: string;
 };
 
+type SortOption = "default" | "name" | "price" | "change";
+
+const SORT_LABELS: Record<SortOption, string> = {
+  default: "Default",
+  name: "Name (A–Z)",
+  price: "Price (High–Low)",
+  change: "Change % (Best–Worst)",
+};
+
+const SORT_OPTIONS: SortOption[] = ["default", "name", "price", "change"];
+
+function sortStocks(items: StockWithData[], sort: SortOption): StockWithData[] {
+  if (sort === "default") return items;
+  const sorted = [...items];
+  switch (sort) {
+    case "name":
+      return sorted.sort((a, b) => a.stock.name.localeCompare(b.stock.name));
+    case "price":
+      return sorted.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
+    case "change":
+      return sorted.sort((a, b) => (b.percentChange ?? 0) - (a.percentChange ?? 0));
+  }
+}
+
 export function HomeContent({
   stocksWithData,
   totalMarketCap,
@@ -32,6 +56,7 @@ export function HomeContent({
 }: HomeContentProps) {
   const [search, setSearch] = useState("");
   const [activeSector, setActiveSector] = useState("All");
+  const [activeSort, setActiveSort] = useState<SortOption>("default");
   const searchRef = useRef<HTMLInputElement>(null);
 
   const { ref: bentoRef, inView: bentoVisible } = useInView({ threshold: 0.15 });
@@ -111,8 +136,8 @@ export function HomeContent({
           s.stock.symbol.toLowerCase().includes(q) || s.stock.name.toLowerCase().includes(q),
       );
     }
-    return items;
-  }, [stocksWithData, activeSector, search]);
+    return sortStocks(items, activeSort);
+  }, [stocksWithData, activeSector, search, activeSort]);
 
   return (
     <>
@@ -195,6 +220,22 @@ export function HomeContent({
               }`}
             >
               {sector}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-1.5 sm:ml-auto">
+          <span className="text-xs text-muted-foreground mr-0.5">Sort:</span>
+          {SORT_OPTIONS.map((option) => (
+            <button
+              key={option}
+              onClick={() => setActiveSort(option)}
+              className={`shrink-0 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                option === activeSort
+                  ? "bg-foreground text-background"
+                  : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              {SORT_LABELS[option]}
             </button>
           ))}
         </div>

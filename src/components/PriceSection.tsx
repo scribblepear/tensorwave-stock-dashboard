@@ -11,7 +11,7 @@ type PriceSectionProps = {
   latestDate?: string;
 };
 
-const GLASS = "relative rounded-xl border border-white/30 bg-white/60 shadow-sm backdrop-blur-xl overflow-hidden";
+const GLASS = "relative rounded-xl border border-border/40 bg-card/80 shadow-sm backdrop-blur-xl overflow-hidden";
 
 function dateInRange(date: string, rangeLabel: string): boolean {
   const selected = RANGES.find((r) => r.label === rangeLabel);
