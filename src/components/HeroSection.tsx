@@ -52,7 +52,7 @@ export function HeroSection({ prices, companyInfo, tableData }: HeroSectionProps
               Stock Dashboard
             </p>
             <h1 className="text-5xl font-bold leading-[0.92] tracking-tight sm:text-6xl md:text-7xl lg:text-8xl">
-              <span style={{ color: "#8B4000" }}>
+              <span className="text-[#8B4000] dark:text-[#2dd4bf]">
                 <ScrambleText text="TensorWave" duration={1200} />
               </span>
               <br />

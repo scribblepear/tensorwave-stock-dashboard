@@ -223,7 +223,7 @@ export function HomeContent({
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-1.5 sm:ml-auto">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 -mb-0.5 scrollbar-hide">
           <span className="text-xs text-muted-foreground mr-0.5">Sort:</span>
           {SORT_OPTIONS.map((option) => (
             <button

@@ -244,6 +244,14 @@
   );
 }
 
+.dark .hero-gradient {
+  background: radial-gradient(
+    800px circle at 50% 0%,
+    oklch(from var(--primary) l c h / 0.15),
+    transparent
+  );
+}
+
 @keyframes hero-line-draw {
   from { stroke-dashoffset: 1; }
   to { stroke-dashoffset: 0; }
