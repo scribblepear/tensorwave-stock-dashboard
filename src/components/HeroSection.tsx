@@ -46,8 +46,8 @@ export function HeroSection({ prices, companyInfo, tableData }: HeroSectionProps
       />
 
       <div className="flex h-full items-center">
-        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-6 px-6 md:gap-12 md:px-8 md:grid-cols-[3fr_2fr]">
-          <div className="text-center md:text-left">
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-6 px-6 lg:gap-12 lg:px-8 lg:grid-cols-[3fr_2fr]">
+          <div className="text-center lg:text-left">
             <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground/70">
               Stock Dashboard
             </p>
@@ -60,13 +60,13 @@ export function HeroSection({ prices, companyInfo, tableData }: HeroSectionProps
                 <ScrambleText text="Markets" delay={300} duration={900} />
               </span>
             </h1>
-            <p className="mx-auto mt-7 max-w-md text-base leading-relaxed text-muted-foreground/80 md:mx-0">
+            <p className="mx-auto mt-7 max-w-md text-base leading-relaxed text-muted-foreground/80 lg:mx-0">
               Track prices and trends for 15 major stocks.
             </p>
 
           </div>
 
-          <div className="max-w-sm mx-auto md:max-w-none md:mx-0">
+          <div className="max-w-sm mx-auto lg:max-w-none lg:mx-0">
             <HeroCard
               currentStep={currentStep}
               stepProgress={stepProgress}

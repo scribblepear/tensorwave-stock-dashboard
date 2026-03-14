@@ -50,7 +50,7 @@ export function HeroCard({
   const stepLabels = ["Company Intelligence", "Price Analytics", "Market Data"];
 
   return (
-    <div className="hidden md:flex md:flex-col md:items-end">
+    <div className="hidden lg:flex lg:flex-col lg:items-end">
       <div
         className="relative w-full max-w-[420px] rounded-2xl border border-white/40 bg-white/60 backdrop-blur-xl p-7 transition-all duration-1000 ease-out"
         style={{
