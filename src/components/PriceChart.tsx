@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useCallback } from "react";
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, ReferenceLine } from "recharts";
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, ReferenceLine, type MouseHandlerDataParam } from "recharts";
 import { type DailyPrice } from "@/lib/alpha-vantage";
 import { format, parseISO, subDays } from "date-fns";
 
@@ -73,7 +73,7 @@ export function PriceChart({ prices, onHoverDate, activeDate, selectedDate, rang
     if (!selected || selected.days === 0) return allData;
 
     const cutoff = subDays(new Date(), selected.days);
-
+    // filter doesn't work right without parseISO here, just comparing strings breaks it
     return allData.filter((d) => parseISO(d.date) >= cutoff);
   }, [prices, range]);
 
@@ -85,8 +85,7 @@ export function PriceChart({ prices, onHoverDate, activeDate, selectedDate, rang
   const fillColor = isPositive ? "#16a34a" : "#dc2626";
 
   const handleMouseMove = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (state: any) => {
+    (state: MouseHandlerDataParam) => {
       const date = state?.activeLabel ? String(state.activeLabel) : null;
       onHoverDate?.(date);
     },
@@ -99,7 +98,6 @@ export function PriceChart({ prices, onHoverDate, activeDate, selectedDate, rang
 
   return (
     <div>
-      {/* Range toggles */}
       <div className="mb-3 flex gap-1">
         {RANGES.map((r) => (
           <button

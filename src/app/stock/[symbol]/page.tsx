@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: StockPageProps): Promise<Meta
     return { title: "Stock Not Found" };
   }
 
-  const title = `${stock.name} (${upperSymbol}) — TensorWave Stock Dashboard`;
+  const title = `${stock.name} (${upperSymbol}) | TensorWave Stock Dashboard`;
   const description = `Real-time price data, trends, and financial metrics for ${stock.name} (${upperSymbol})`;
 
   return {
@@ -81,7 +81,6 @@ export default async function StockPage({ params }: StockPageProps) {
         Dashboard
       </Link>
 
-      {/* Header */}
       <div className="mb-5 flex items-center gap-4">
         <div className="relative h-14 w-14 shrink-0 sm:h-16 sm:w-16">
           <Image
@@ -93,7 +92,6 @@ export default async function StockPage({ params }: StockPageProps) {
           />
         </div>
         <div className="min-w-0 flex-1">
-          {/* Desktop: single row with name, ticker, price all baseline-aligned */}
           <div className="hidden sm:flex flex-wrap items-baseline gap-x-3 gap-y-1">
             <h1 className="text-3xl font-bold tracking-tight lg:text-4xl">
               <ScrambleText text={overview?.Name ?? stock.name} duration={1500} />
@@ -124,7 +122,6 @@ export default async function StockPage({ params }: StockPageProps) {
               </>
             )}
           </div>
-          {/* Mobile: stacked — name+ticker, then price below */}
           <div className="sm:hidden">
             <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0">
               <h1 className="text-lg font-bold tracking-tight">
@@ -159,7 +156,6 @@ export default async function StockPage({ params }: StockPageProps) {
         </div>
       </div>
 
-      {/* Stat bar — scrolling ticker in bento container */}
       <div className="relative z-10 mb-6 overflow-hidden rounded-xl border border-border/40 bg-muted py-3">
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-muted to-transparent" />
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-muted to-transparent" />
@@ -185,7 +181,6 @@ export default async function StockPage({ params }: StockPageProps) {
         </p>
       )}
 
-      {/* Company Overview */}
       {overview?.Description && overview.Description !== "None" && (
         <div className="mb-8">
           <h2 className="mb-2 text-lg font-semibold">Company Overview</h2>
@@ -193,7 +188,6 @@ export default async function StockPage({ params }: StockPageProps) {
         </div>
       )}
 
-      {/* Chart + Table side by side (60/40) */}
       {prices.length > 0 && (
         <PriceSection prices={prices} />
       )}
@@ -212,7 +206,6 @@ export default async function StockPage({ params }: StockPageProps) {
         </Card>
       )}
 
-      {/* Financial Metrics */}
       {extendedOverview && <FinancialMetrics data={extendedOverview} />}
     </main>
   );

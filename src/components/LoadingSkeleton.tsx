@@ -1,6 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
 
-// Realistic stock chart — rally, correction, consolidation, breakout, pullback, moonshot
 const POINTS: [number, number][] = [
   [0, 108], [7, 112], [14, 116], [21, 118], [28, 114],
   [35, 106], [42, 98], [49, 90], [56, 84], [63, 78],
@@ -13,7 +12,7 @@ const POINTS: [number, number][] = [
   [259, 38], [266, 22], [273, 10], [280, 4],
 ];
 
-// Convert points to a smooth cubic bezier path (catmull-rom interpolation)
+// smooth the path between points
 function smoothPath(pts: [number, number][]): string {
   if (pts.length < 2) return "";
   let d = `M${pts[0][0]} ${pts[0][1]}`;
@@ -71,10 +70,8 @@ export function DetailsSkeleton() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="animate-pulse space-y-6">
-        {/* Back link */}
         <div className="h-4 w-32 rounded bg-muted" />
 
-        {/* Header: desktop — single row; mobile — stacked */}
         <div className="flex items-center gap-4">
           <div className="h-14 w-14 shrink-0 rounded-2xl bg-muted sm:h-16 sm:w-16" />
           {/* Desktop */}
@@ -98,10 +95,8 @@ export function DetailsSkeleton() {
           </div>
         </div>
 
-        {/* Scrolling stat bar — full width */}
         <div className="h-5 w-full rounded bg-muted" />
 
-        {/* Company Overview */}
         <div>
           <div className="h-6 w-48 rounded bg-muted" />
           <div className="mt-3 space-y-2">
@@ -111,7 +106,6 @@ export function DetailsSkeleton() {
           </div>
         </div>
 
-        {/* Chart + Table side by side */}
         <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
           <div>
             <div className="h-6 w-32 rounded bg-muted" />
@@ -142,7 +136,6 @@ export function DetailsSkeleton() {
           </div>
         </div>
 
-        {/* Fundamentals */}
         <div className="mt-4">
           <div className="h-6 w-36 rounded bg-muted" />
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">

@@ -54,7 +54,7 @@ function writeMockFile(filename: string, data: Record<string, unknown>): void {
     mkdirSync(MOCK_DIR, { recursive: true });
     writeFileSync(join(MOCK_DIR, filename), JSON.stringify(data, null, 2));
   } catch {
-    // Silently fail (e.g. read-only filesystem on Vercel)
+    // write might fail on vercel, that's fine
   }
 }
 

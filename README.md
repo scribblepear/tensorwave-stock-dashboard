@@ -1,10 +1,12 @@
 # TensorWave Stock Dashboard
 
-Stock intelligence dashboard built for TensorWave's take-home coding challenge. Tracks 15 major stocks with company overviews, price charts, and financial metrics — all pulled from the Alpha Vantage API.
+Stock dashboard built for TensorWave's take-home coding challenge. Tracks 15 major stocks with company overviews, price charts, and financial metrics, all pulled from the Alpha Vantage API.
 
-The homepage opens with a scroll-locked hero section featuring AMD (since TensorWave runs on AMD hardware), then drops into a markets overview with KPI cards, top movers, sector filtering, and search. Click any stock to get its detail page with an interactive price chart, daily price table, and 12 financial fundamentals.
+The homepage opens with a scroll-locked hero section featuring AMD, then drops into a stock grid with stat cards, top movers, sector filtering, and search. Click any stock to get its detail page with an interactive price chart, daily price table, and key financials.
 
 **Live:** [tensorwave-stock-dashboard.vercel.app](https://tensorwave-stock-dashboard.vercel.app)
+
+> **Try it:** click any stock on the homepage or go directly to [/stock/AMD](https://tensorwave-stock-dashboard.vercel.app/stock/AMD)
 
 ## Getting Started
 
@@ -22,7 +24,7 @@ Optionally, create `.env.local` with your Alpha Vantage key:
 ALPHA_VANTAGE_API_KEY=your_key_here
 ```
 
-Free keys at [alphavantage.co/support](https://www.alphavantage.co/support/#api-key). But you don't need one — all 15 stocks come pre-seeded with cached data so everything works out of the box.
+Free keys at [alphavantage.co/support](https://www.alphavantage.co/support/#api-key). But you don't need one - all 15 stocks come pre-seeded with cached data so everything works out of the box.
 
 ```bash
 npm run dev
@@ -54,21 +56,19 @@ Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS v4, Recharts for cha
 
 **Homepage doesn't call the API at all.** It reads directly from the cached JSON files on the server, so it loads instantly and never burns API calls. Only detail pages hit the API (and even then, only if the cache is stale).
 
-**AMD in the hero, not AAPL or NVIDIA.** TensorWave runs on AMD GPUs, and NVIDIA is a competitor — felt like the right call for a TensorWave project.
-
-**Scroll-locked hero.** The hero section locks the page scroll and cycles through three steps (Company Intelligence, Price Analytics, Market Data) as you scroll. Each step has its own animation — word-by-word text reveal, SVG chart line drawing, staggered table row fades. Scroll back up and it reverses. Inspired by Greptile's landing page.
+**Scroll-locked hero.** The hero section locks the page scroll and cycles through three steps (company info, price charts, market data) as you scroll. Each step has its own animation - word-by-word text reveal, SVG chart line drawing, staggered table row fades. Scroll back up and it reverses. Inspired by Greptile's landing page.
 
 **No framer-motion.** Considered it for animations but it felt like overkill for this project. Everything is CSS transitions + a custom scroll hook.
 
-Cache files live in `src/data/mock/` as JSON — doubles as the pre-seeded demo data. One catch: Vercel's filesystem is read-only in production, so the file cache won't persist between serverless invocations. Would need Redis or similar for a real deployment.
+Cache files live in `src/data/mock/` as JSON, which doubles as the pre-seeded demo data. One catch though: Vercel's filesystem is read-only in production, so the file cache won't persist between serverless invocations. Would need Redis or similar for a real deployment.
 
 ## What I'd Improve
 
 - The free tier only gives end-of-day prices and 100 data points (~5 months). A premium key would unlock real-time quotes and full history.
-- WebSocket connection for live price updates instead of stale daily data.
-- Unit and integration tests — didn't prioritize these given the time constraint but would be first on the list for a production app.
+- Live prices would be cool, right now everything is end-of-day data.
+- Tests - ran out of time, focused on making it look good instead. Would add tests first if this were going to prod.
 - Search by company name across detail pages, not just the homepage grid.
-- More charting options — candlestick charts, moving averages, volume overlays.
+- Candlestick charts would be sick.
 
 ## Project Structure
 
@@ -83,7 +83,7 @@ src/
 
 ## Tracked Stocks
 
-AAPL, MSFT, GOOGL, AMZN, NVDA, META, TSLA, JPM, V, JNJ, WMT, UNH, AMD, DIS, NFLX — mix of tech, finance, healthcare, and consumer sectors.
+AAPL, MSFT, GOOGL, AMZN, NVDA, META, TSLA, JPM, V, JNJ, WMT, UNH, AMD, DIS, NFLX - mix of tech, finance, healthcare, and consumer sectors.
 
 ## Time Spent
 

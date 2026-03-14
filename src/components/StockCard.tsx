@@ -68,7 +68,7 @@ function hoverShadow(positive: boolean): string {
 }
 
 export function StockCard({ stock, price, percentChange, sparklineData, animate = true }: StockCardProps) {
-  const positive = (percentChange ?? 0) >= 0;
+  const positive = (percentChange || 0) >= 0;
 
   return (
     <Link href={`/stock/${stock.symbol}`}>

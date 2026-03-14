@@ -12,7 +12,7 @@ type ScrambleTextProps = {
 };
 
 export function ScrambleText({ text, className = "", delay = 0, duration = 1500 }: ScrambleTextProps) {
-  // Start with real text to avoid hydration mismatch
+  // SSR needs real text first or React freaks out
   const [displayed, setDisplayed] = useState(text);
   const frameRef = useRef<number>(0);
   const lastTickRef = useRef(0);

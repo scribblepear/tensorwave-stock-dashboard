@@ -13,7 +13,6 @@ export function AnimatedPrice({ value, isPositive, className = "" }: AnimatedPri
   const [flashing, setFlashing] = useState(false);
   const frameRef = useRef<number>(0);
 
-  // Counter animation on mount
   useEffect(() => {
     const duration = 800;
     const start = performance.now();
@@ -22,7 +21,6 @@ export function AnimatedPrice({ value, isPositive, className = "" }: AnimatedPri
     function tick(now: number) {
       const elapsed = now - start;
       const progress = Math.min(elapsed / duration, 1);
-      // ease-out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       setDisplayed(from + (value - from) * eased);
 
