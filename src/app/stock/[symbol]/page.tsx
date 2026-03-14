@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: StockPageProps): Promise<Meta
   }
 
   const title = `${stock.name} (${upperSymbol}) | TensorWave Stock Dashboard`;
-  const description = `Real-time price data, trends, and financial metrics for ${stock.name} (${upperSymbol})`;
+  const description = `Price history and company info for ${stock.name} (${upperSymbol})`;
 
   return {
     title,

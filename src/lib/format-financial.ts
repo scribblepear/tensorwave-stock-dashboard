@@ -9,10 +9,8 @@ export function formatLargeNumber(value: string | undefined): string {
 }
 
 export function formatPercent(value: string | undefined): string {
-  if (!value || value === "None") return "N/A";
-  const num = parseFloat(value);
-  if (isNaN(num)) return "N/A";
-  return `${(num * 100).toFixed(2)}%`;
+  if (!value || value === "None" || isNaN(parseFloat(value))) return "N/A";
+  return `${(parseFloat(value) * 100).toFixed(2)}%`;
 }
 
 export function formatRatio(value: string | undefined): string {
@@ -23,7 +21,7 @@ export function formatRatio(value: string | undefined): string {
 }
 
 export function formatCurrency(value: string | undefined): string {
-  if (!value || value === "None") return "N/A";
+  if (!value) return "N/A";
   const num = parseFloat(value);
   if (isNaN(num)) return "N/A";
   return `$${num.toFixed(2)}`;

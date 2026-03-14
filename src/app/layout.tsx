@@ -16,11 +16,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "TensorWave Stock Dashboard",
   description:
-    "Stock intelligence dashboard tracking 15 major stocks with real-time data from Alpha Vantage",
+    "A stock dashboard that tracks 15 major stocks using Alpha Vantage data",
   openGraph: {
     title: "TensorWave Stock Dashboard",
     description:
-      "Stock intelligence dashboard tracking 15 major stocks with real-time data from Alpha Vantage",
+      "A stock dashboard that tracks 15 major stocks using Alpha Vantage data",
     type: "website",
   },
 };

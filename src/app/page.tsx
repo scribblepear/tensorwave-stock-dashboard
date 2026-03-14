@@ -53,13 +53,14 @@ function loadStockData(symbol: string) {
 function loadMarketCap(symbol: string): string {
   const filePath = path.join(process.cwd(), "src", "data", "mock", `overview-${symbol}.json`);
 
-  if (!fs.existsSync(filePath)) return "0";
-
-  const raw = JSON.parse(fs.readFileSync(filePath, "utf-8")) as {
-    MarketCapitalization?: string;
-  };
-
-  return raw.MarketCapitalization ?? "0";
+  try {
+    const raw = JSON.parse(fs.readFileSync(filePath, "utf-8")) as {
+      MarketCapitalization?: string;
+    };
+    return raw.MarketCapitalization ?? "0";
+  } catch {
+    return "0";
+  }
 }
 
 type OverviewJson = {

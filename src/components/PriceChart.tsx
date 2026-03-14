@@ -3,6 +3,7 @@
 import { useMemo, useCallback } from "react";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, ReferenceLine, type MouseHandlerDataParam } from "recharts";
 import { type DailyPrice } from "@/lib/alpha-vantage";
+import { CandlestickChart } from "@/components/CandlestickChart";
 import { format, parseISO, subDays } from "date-fns";
 
 export const RANGES = [
@@ -22,6 +23,8 @@ type ChartDataPoint = {
   percentChange: number;
 };
 
+type ChartMode = "line" | "candle";
+
 type PriceChartProps = {
   prices: DailyPrice[];
   onHoverDate?: (date: string | null) => void;
@@ -29,24 +32,19 @@ type PriceChartProps = {
   selectedDate?: string | null;
   range: string;
   onRangeChange: (range: string) => void;
+  chartMode: ChartMode;
+  onChartModeChange: (mode: ChartMode) => void;
 };
 
 function CustomTooltip({ active, payload }: { active?: boolean; payload?: { payload: ChartDataPoint }[] }) {
   if (!active || !payload?.[0]) return null;
   const d = payload[0].payload;
-
+  const tooltipStyle = {
+    backgroundColor: "var(--card)", border: "1px solid var(--border)", borderRadius: "10px",
+    color: "var(--foreground)", boxShadow: "0 4px 12px rgba(0,0,0,0.15)", padding: "8px 12px", fontSize: "12px",
+  };
   return (
-    <div
-      style={{
-        backgroundColor: "var(--card)",
-        border: "1px solid var(--border)",
-        borderRadius: "10px",
-        color: "var(--foreground)",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-        padding: "8px 12px",
-        fontSize: "12px",
-      }}
-    >
+    <div style={tooltipStyle}>
       <div style={{ color: "var(--muted-foreground)", marginBottom: 2 }}>
         {format(parseISO(d.date), "MMM d, yyyy")}
       </div>
@@ -57,7 +55,7 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: { payl
   );
 }
 
-export function PriceChart({ prices, onHoverDate, activeDate, selectedDate, range, onRangeChange }: PriceChartProps) {
+export function PriceChart({ prices, onHoverDate, activeDate, selectedDate, range, onRangeChange, chartMode, onChartModeChange }: PriceChartProps) {
   const chartData = useMemo(() => {
     const allData: ChartDataPoint[] = [...prices].reverse().map((p) => ({
       date: p.date,
@@ -80,9 +78,7 @@ export function PriceChart({ prices, onHoverDate, activeDate, selectedDate, rang
   const firstClose = chartData[0]?.close ?? 0;
   const lastClose = chartData[chartData.length - 1]?.close ?? 0;
   const isPositive = lastClose >= firstClose;
-
-  const strokeColor = isPositive ? "#16a34a" : "#dc2626";
-  const fillColor = isPositive ? "#16a34a" : "#dc2626";
+  const lineColor = isPositive ? "#16a34a" : "#dc2626";
 
   const handleMouseMove = useCallback(
     (state: MouseHandlerDataParam) => {
@@ -95,25 +91,44 @@ export function PriceChart({ prices, onHoverDate, activeDate, selectedDate, rang
   const handleMouseLeave = useCallback(() => {
     onHoverDate?.(null);
   }, [onHoverDate]);
-
   return (
     <div>
-      <div className="mb-3 flex gap-1">
-        {RANGES.map((r) => (
-          <button
-            key={r.label}
-            onClick={() => onRangeChange(r.label)}
-            className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
-              range === r.label
-                ? "bg-foreground text-background"
-                : "text-muted-foreground hover:bg-muted"
-            }`}
-          >
-            {r.label}
-          </button>
-        ))}
+      <div className="mb-3 flex items-center justify-between">
+        <div className="flex gap-1">
+          {RANGES.map((r) => (
+            <button
+              key={r.label}
+              onClick={() => onRangeChange(r.label)}
+              className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                range === r.label
+                  ? "bg-foreground text-background"
+                  : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              {r.label}
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-1 rounded-md border border-border/50 p-0.5">
+          {(["line", "candle"] as const).map((mode) => (
+            <button
+              key={mode}
+              onClick={() => onChartModeChange(mode)}
+              className={`rounded px-2 py-0.5 text-[10px] font-medium transition-colors ${
+                chartMode === mode
+                  ? "bg-foreground text-background"
+                  : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              {mode === "line" ? "Line" : "Candle"}
+            </button>
+          ))}
+        </div>
       </div>
 
+      {chartMode === "candle" ? (
+        <CandlestickChart data={chartData} />
+      ) : (
       <div className="h-64 w-full sm:h-72 [&_.recharts-wrapper]:!cursor-crosshair">
         <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
           <AreaChart
@@ -124,8 +139,8 @@ export function PriceChart({ prices, onHoverDate, activeDate, selectedDate, rang
           >
             <defs>
               <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={fillColor} stopOpacity={0.2} />
-                <stop offset="100%" stopColor={fillColor} stopOpacity={0} />
+                <stop offset="0%" stopColor={lineColor} stopOpacity={0.2} />
+                <stop offset="100%" stopColor={lineColor} stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" strokeOpacity={0.5} />
@@ -170,15 +185,16 @@ export function PriceChart({ prices, onHoverDate, activeDate, selectedDate, rang
             <Area
               type="monotone"
               dataKey="close"
-              stroke={strokeColor}
+              stroke={lineColor}
               strokeWidth={2}
               fill="url(#priceGradient)"
               dot={false}
-              activeDot={selectedDate ? false : { r: 5, fill: strokeColor, stroke: "#fff", strokeWidth: 2, className: "animate-active-dot" }}
+              activeDot={selectedDate ? false : { r: 5, fill: lineColor, stroke: "#fff", strokeWidth: 2, className: "animate-active-dot" }}
             />
           </AreaChart>
         </ResponsiveContainer>
       </div>
+      )}
     </div>
   );
 }

@@ -36,6 +36,7 @@ export function PriceSection({ prices }: PriceSectionProps) {
   const [hoveredDate, setHoveredDate] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [range, setRange] = useState("6M");
+  const [chartMode, setChartMode] = useState<"line" | "candle">("line");
   const activeDate = selectedDate ?? hoveredDate;
 
   const handleChartHover = useCallback((date: string | null) => {
@@ -65,6 +66,8 @@ export function PriceSection({ prices }: PriceSectionProps) {
             selectedDate={selectedDate}
             range={range}
             onRangeChange={setRange}
+            chartMode={chartMode}
+            onChartModeChange={setChartMode}
           />
         </div>
       </div>

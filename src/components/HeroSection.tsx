@@ -49,7 +49,7 @@ export function HeroSection({ prices, companyInfo, tableData }: HeroSectionProps
         <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 px-8 md:grid-cols-[3fr_2fr]">
           <div>
             <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground/70">
-              Stock Intelligence Platform
+              Stock Dashboard
             </p>
             <h1 className="text-6xl font-bold leading-[0.92] tracking-tight sm:text-7xl lg:text-8xl">
               <span style={{ color: "#8B4000" }}>
@@ -61,7 +61,7 @@ export function HeroSection({ prices, companyInfo, tableData }: HeroSectionProps
               </span>
             </h1>
             <p className="mt-7 max-w-md text-base leading-relaxed text-muted-foreground/80">
-              Real-time prices, trends, and analysis for the top stocks on the market.
+              Track prices and trends for 15 major stocks.
             </p>
 
           </div>

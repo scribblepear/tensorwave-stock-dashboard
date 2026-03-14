@@ -95,12 +95,12 @@ export async function fetchCompanyOverview(symbol: string): Promise<CompanyOverv
 
   return {
     Symbol: String(data.Symbol ?? "N/A"),
-    AssetType: String(data.AssetType ?? "N/A"),
+    AssetType: (data.AssetType as string) ?? "N/A",
     Name: String(data.Name ?? "N/A"),
     Description: String(data.Description ?? "N/A"),
-    Exchange: String(data.Exchange ?? "N/A"),
+    Exchange: (data.Exchange as string) ?? "N/A",
     Sector: String(data.Sector ?? "N/A"),
-    Industry: String(data.Industry ?? "N/A"),
+    Industry: (data.Industry as string) ?? "N/A",
     MarketCapitalization: String(data.MarketCapitalization ?? "N/A"),
   };
 }
