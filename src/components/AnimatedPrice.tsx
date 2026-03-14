@@ -16,7 +16,7 @@ export function AnimatedPrice({ value, isPositive, className = "" }: AnimatedPri
   useEffect(() => {
     const duration = 800;
     const start = performance.now();
-    const from = value * 0.995; // start close to final value
+    const from = value * 0.995;
 
     function tick(now: number) {
       const elapsed = now - start;

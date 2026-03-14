@@ -193,7 +193,7 @@ export default async function StockPage({ params }: StockPageProps) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 3v18h18" />
             </svg>
             <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
-              Price data unavailable &mdash; the Alpha Vantage free tier allows 25 requests per day. Try again later or check back tomorrow.
+              Price data unavailable - the Alpha Vantage free tier allows 25 requests per day. Try again later or check back tomorrow.
             </p>
           </CardContent>
         </Card>

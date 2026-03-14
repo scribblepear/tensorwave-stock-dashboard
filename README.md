@@ -50,6 +50,10 @@ Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS v4, Recharts for cha
 - [x] Financial fundamentals (P/E, EPS, dividend yield, beta, 52-week range, etc.)
 - [x] Bidirectional chart-table interaction (click a row to highlight on chart, hover chart to scroll table)
 - [x] Candlestick chart mode with line/candle toggle
+- [x] Apple Stocks-style hover interaction - price info in top bar, thin crosshair, and dot on the data point
+- [x] Mobile/touch support for chart interactions on both line and candlestick modes
+- [x] Hero section disabled on tablet screens to avoid awkward scroll-lock on mid-size viewports
+- [x] Unit tests for utility functions
 
 ## Design Decisions
 
@@ -68,7 +72,7 @@ Cache files live in `src/data/mock/` as JSON, which doubles as the pre-seeded de
 - The free tier only gives end-of-day prices and 100 data points (~5 months). A premium key would unlock real-time quotes and full history.
 - Live prices would be cool, right now everything is end-of-day data.
 - Search by company name across detail pages, not just the homepage grid.
-- More test coverage - there's some basic util tests but would want integration tests for the API caching and component tests too.
+- More test coverage - there are unit tests for utils but would want integration tests for the API caching and component tests too.
 
 ## Project Structure
 

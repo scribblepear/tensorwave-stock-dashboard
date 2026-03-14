@@ -12,7 +12,6 @@ const POINTS: [number, number][] = [
   [259, 38], [266, 22], [273, 10], [280, 4],
 ];
 
-// smooth the path between points
 function smoothPath(pts: [number, number][]): string {
   if (pts.length < 2) return "";
   let d = `M${pts[0][0]} ${pts[0][1]}`;
@@ -74,7 +73,6 @@ export function DetailsSkeleton() {
 
         <div className="flex items-center gap-4">
           <div className="h-14 w-14 shrink-0 rounded-2xl bg-muted sm:h-16 sm:w-16" />
-          {/* Desktop */}
           <div className="hidden sm:flex flex-1 flex-wrap items-baseline gap-3">
             <div className="h-9 w-56 rounded bg-muted" />
             <div className="h-9 w-20 rounded bg-muted" />
@@ -82,7 +80,6 @@ export function DetailsSkeleton() {
             <div className="h-9 w-32 rounded bg-muted" />
             <div className="h-4 w-16 rounded bg-muted" />
           </div>
-          {/* Mobile */}
           <div className="sm:hidden flex-1 space-y-1.5">
             <div className="flex items-baseline gap-2">
               <div className="h-5 w-32 rounded bg-muted" />
