@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useCallback, useRef } from "react";
+import { useMemo, useCallback, useRef, useState } from "react";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, ReferenceLine, type MouseHandlerDataParam } from "recharts";
 import { type DailyPrice } from "@/lib/alpha-vantage";
 import { CandlestickChart } from "@/components/CandlestickChart";
@@ -36,21 +36,28 @@ type PriceChartProps = {
   onChartModeChange: (mode: ChartMode) => void;
 };
 
-function CustomTooltip({ active, payload }: { active?: boolean; payload?: { payload: ChartDataPoint }[] }) {
-  if (!active || !payload?.[0]) return null;
-  const d = payload[0].payload;
-  const tooltipStyle = {
-    backgroundColor: "var(--card)", border: "1px solid var(--border)", borderRadius: "10px",
-    color: "var(--foreground)", boxShadow: "0 4px 12px rgba(0,0,0,0.15)", padding: "8px 12px", fontSize: "12px",
-  };
+function LineChartHeader({ point, isPositive }: { point: ChartDataPoint | null; isPositive: boolean }) {
   return (
-    <div style={tooltipStyle}>
-      <div style={{ color: "var(--muted-foreground)", marginBottom: 2 }}>
-        {format(parseISO(d.date), "MMM d, yyyy")}
-      </div>
-      <div style={{ fontWeight: 600, fontSize: 14, fontVariantNumeric: "tabular-nums" }}>
-        ${d.close.toFixed(2)}
-      </div>
+    <div className="pointer-events-none flex h-6 items-center justify-center gap-3 text-xs tabular-nums">
+      {point ? (
+        <>
+          <span className="font-medium text-muted-foreground">
+            {format(parseISO(point.date), "MMM d, yyyy")}
+          </span>
+          <span className="font-semibold">${point.close.toFixed(2)}</span>
+          <span
+            className="font-medium"
+            style={{ color: isPositive ? "var(--color-positive)" : "var(--color-negative)" }}
+          >
+            {point.percentChange > 0 ? "+" : ""}{point.percentChange.toFixed(2)}%
+          </span>
+          <span className="text-muted-foreground">
+            Vol {point.volume.toLocaleString()}
+          </span>
+        </>
+      ) : (
+        <span className="text-muted-foreground/50 text-[10px]">Hover or tap the chart</span>
+      )}
     </div>
   );
 }
@@ -80,16 +87,23 @@ export function PriceChart({ prices, onHoverDate, activeDate, selectedDate, rang
   const isPositive = lastClose >= firstClose;
   const lineColor = isPositive ? "#16a34a" : "#dc2626";
 
+  const [hoveredPoint, setHoveredPoint] = useState<ChartDataPoint | null>(null);
+
   const handleMouseMove = useCallback(
     (state: MouseHandlerDataParam) => {
       const date = state?.activeLabel ? String(state.activeLabel) : null;
       onHoverDate?.(date);
+      if (date) {
+        const pt = chartData.find((d) => d.date === date);
+        setHoveredPoint(pt ?? null);
+      }
     },
-    [onHoverDate],
+    [onHoverDate, chartData],
   );
 
   const handleMouseLeave = useCallback(() => {
     onHoverDate?.(null);
+    setHoveredPoint(null);
   }, [onHoverDate]);
 
   const lineChartRef = useRef<HTMLDivElement>(null);
@@ -103,7 +117,9 @@ export function PriceChart({ prices, onHoverDate, activeDate, selectedDate, rang
       const chartW = rect.width - margin - 5;
       const idx = Math.round((relX / chartW) * (chartData.length - 1));
       const clamped = Math.max(0, Math.min(idx, chartData.length - 1));
-      onHoverDate?.(chartData[clamped]?.date ?? null);
+      const pt = chartData[clamped];
+      onHoverDate?.(pt?.date ?? null);
+      setHoveredPoint(pt ?? null);
     },
     [chartData, onHoverDate],
   );
@@ -146,9 +162,11 @@ export function PriceChart({ prices, onHoverDate, activeDate, selectedDate, rang
       {chartMode === "candle" ? (
         <CandlestickChart data={chartData} onHoverDate={onHoverDate} />
       ) : (
+      <>
+      <LineChartHeader point={hoveredPoint} isPositive={isPositive} />
       <div
         ref={lineChartRef}
-        className="h-64 w-full sm:h-72 [&_.recharts-wrapper]:!cursor-crosshair"
+        className="h-56 w-full sm:h-64 [&_.recharts-wrapper]:!cursor-crosshair"
         onTouchMove={handleLineTouch}
         onTouchEnd={handleMouseLeave}
       >
@@ -184,24 +202,18 @@ export function PriceChart({ prices, onHoverDate, activeDate, selectedDate, rang
             />
             {!selectedDate && (
               <Tooltip
-                content={<CustomTooltip />}
-                cursor={{ stroke: "var(--muted-foreground)", strokeWidth: 1, strokeDasharray: "4 4" }}
+                content={() => null}
+                cursor={false}
                 isAnimationActive={false}
               />
             )}
             {activeDate && chartData.some((d) => d.date === activeDate) && (
               <ReferenceLine
                 x={activeDate}
-                stroke="var(--color-primary)"
-                strokeWidth={2}
-                strokeDasharray="4 4"
-                label={selectedDate ? {
-                  value: `${format(parseISO(activeDate), "MMM d")}  $${chartData.find((d) => d.date === activeDate)?.close.toFixed(2) ?? ""}`,
-                  position: "top",
-                  fill: "var(--foreground)",
-                  fontSize: 12,
-                  fontWeight: 600,
-                } : undefined}
+                stroke="var(--muted-foreground)"
+                strokeWidth={0.5}
+                strokeDasharray="3 3"
+                strokeOpacity={0.6}
               />
             )}
             <Area
@@ -211,11 +223,12 @@ export function PriceChart({ prices, onHoverDate, activeDate, selectedDate, rang
               strokeWidth={2}
               fill="url(#priceGradient)"
               dot={false}
-              activeDot={selectedDate ? false : { r: 5, fill: lineColor, stroke: "#fff", strokeWidth: 2, className: "animate-active-dot" }}
+              activeDot={selectedDate ? false : { r: 3, fill: lineColor, stroke: "#fff", strokeWidth: 1.5 }}
             />
           </AreaChart>
         </ResponsiveContainer>
       </div>
+      </>
       )}
     </div>
   );

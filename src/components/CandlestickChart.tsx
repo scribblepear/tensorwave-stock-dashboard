@@ -17,39 +17,7 @@ type CandlestickChartProps = {
   onHoverDate?: (date: string | null) => void;
 };
 
-type HoveredCandle = CandleData & { x: number; y: number; containerW: number };
-
-function CandleTooltip({ candle }: { candle: HoveredCandle }) {
-  const bullish = candle.close >= candle.open;
-  return (
-    <div
-      className="pointer-events-none absolute z-10 rounded-lg border border-border/30 bg-background/90 px-3 py-2 text-xs shadow-lg backdrop-blur-xl"
-      style={{
-        left: Math.min(
-          candle.x > candle.containerW * 0.7 ? candle.x - 140 : candle.x + 12,
-          candle.containerW - 150,
-        ),
-        top: Math.max(0, candle.y - 100),
-      }}
-    >
-      <div className="mb-1 font-medium text-muted-foreground">
-        {format(parseISO(candle.date), "MMM d, yyyy")}
-      </div>
-      <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 tabular-nums">
-        <span className="text-muted-foreground">O</span>
-        <span>${candle.open.toFixed(2)}</span>
-        <span className="text-muted-foreground">H</span>
-        <span>${candle.high.toFixed(2)}</span>
-        <span className="text-muted-foreground">L</span>
-        <span>${candle.low.toFixed(2)}</span>
-        <span className="text-muted-foreground">C</span>
-        <span style={{ color: bullish ? "var(--color-positive)" : "var(--color-negative)" }}>
-          ${candle.close.toFixed(2)}
-        </span>
-      </div>
-    </div>
-  );
-}
+type HoveredCandle = CandleData & { idx: number };
 
 export function CandlestickChart({ data, onHoverDate }: CandlestickChartProps) {
   const [hovered, setHovered] = useState<HoveredCandle | null>(null);
@@ -90,13 +58,7 @@ export function CandlestickChart({ data, onHoverDate }: CandlestickChartProps) {
       const idx = Math.floor((relX / chartW) * data.length);
       const d = data[Math.max(0, Math.min(idx, data.length - 1))];
       if (!d) return;
-      const centerPct = (Math.max(0, Math.min(idx, data.length - 1)) + 0.5) / data.length;
-      setHovered({
-        ...d,
-        x: chartLeft + centerPct * chartW,
-        y: (toYPct(d.high) / 100) * (rect.height - 20),
-        containerW: rect.width,
-      });
+      setHovered({ ...d, idx: Math.max(0, Math.min(idx, data.length - 1)) });
       onHoverDate?.(d.date);
     },
     [data, onHoverDate, toYPct],
@@ -104,7 +66,29 @@ export function CandlestickChart({ data, onHoverDate }: CandlestickChartProps) {
 
   return (
     <div className="relative h-64 w-full sm:h-72" ref={containerRef}>
-      {hovered && <CandleTooltip candle={hovered} />}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex h-6 items-center justify-center gap-3 text-xs tabular-nums">
+        {hovered ? (
+          <>
+            <span className="font-medium text-muted-foreground">
+              {format(parseISO(hovered.date), "MMM d, yyyy")}
+            </span>
+            <span className="font-semibold">
+              ${hovered.close.toFixed(2)}
+            </span>
+            <span className="text-muted-foreground">
+              O ${hovered.open.toFixed(2)}
+            </span>
+            <span className="text-muted-foreground">
+              H ${hovered.high.toFixed(2)}
+            </span>
+            <span className="text-muted-foreground">
+              L ${hovered.low.toFixed(2)}
+            </span>
+          </>
+        ) : (
+          <span className="text-muted-foreground/50 text-[10px]">Hover or tap a candle</span>
+        )}
+      </div>
 
       <div className="absolute inset-y-0 left-0 flex w-11 flex-col justify-between py-1 pr-1.5">
         {[...yTicks].reverse().map((val) => (
@@ -132,6 +116,23 @@ export function CandlestickChart({ data, onHoverDate }: CandlestickChartProps) {
             />
           ))}
 
+          {hovered && (() => {
+            const cx = `${(hovered.idx + 0.5) / data.length * 100}%`;
+            const cy = `${toYPct(hovered.close)}%`;
+            const bullish = hovered.close >= hovered.open;
+            const dotColor = bullish ? "var(--color-positive)" : "var(--color-negative)";
+            return (
+              <>
+                <line
+                  x1={cx} x2={cx} y1="0" y2="100%"
+                  stroke="var(--muted-foreground)" strokeWidth={0.5} strokeOpacity={0.6}
+                  strokeDasharray="3 3" vectorEffect="non-scaling-stroke"
+                />
+                <circle cx={cx} cy={cy} r={3} fill={dotColor} stroke="#fff" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
+              </>
+            );
+          })()}
+
           {data.map((d, i) => {
             const count = data.length;
             const widthPct = 100 / count;
@@ -146,17 +147,8 @@ export function CandlestickChart({ data, onHoverDate }: CandlestickChartProps) {
             return (
               <g
                 key={d.date}
-                onMouseEnter={(e) => {
-                  const rect = containerRef.current?.getBoundingClientRect();
-                  if (!rect) return;
-                  const svgRect = e.currentTarget.closest("svg")?.getBoundingClientRect();
-                  if (!svgRect) return;
-                  setHovered({
-                    ...d,
-                    x: svgRect.left - rect.left + (svgRect.width * centerPct) / 100,
-                    y: svgRect.top - rect.top + (svgRect.height * toYPct(d.high)) / 100,
-                    containerW: rect.width,
-                  });
+                onMouseEnter={() => {
+                  setHovered({ ...d, idx: i });
                   onHoverDate?.(d.date);
                 }}
               >
