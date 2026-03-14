@@ -1,10 +1,12 @@
 # TensorWave Stock Dashboard
 
-A stock dashboard I built for the TensorWave coding challenge. You can browse 15 stocks on the homepage and click into any of them to see company info, a price chart, and a daily price table.
+Stock intelligence dashboard built for TensorWave's take-home coding challenge. Tracks 15 major stocks with company overviews, price charts, and financial metrics — all pulled from the Alpha Vantage API.
 
-![Homepage Screenshot](docs/screenshot-homepage.png)
+The homepage opens with a scroll-locked hero section featuring AMD (since TensorWave runs on AMD hardware), then drops into a markets overview with KPI cards, top movers, sector filtering, and search. Click any stock to get its detail page with an interactive price chart, daily price table, and 12 financial fundamentals.
 
-## Quick Start
+**Live:** [tensorwave-stock-dashboard.vercel.app](https://tensorwave-stock-dashboard.vercel.app)
+
+## Getting Started
 
 You'll need Node.js 18+ and npm.
 
@@ -14,27 +16,22 @@ cd tensorwave-stock-dashboard
 npm install
 ```
 
-Create a `.env.local` file:
+Optionally, create `.env.local` with your Alpha Vantage key:
 
 ```
-ALPHA_VANTAGE_API_KEY=your_api_key_here
+ALPHA_VANTAGE_API_KEY=your_key_here
 ```
 
-You can get a free key at [alphavantage.co/support](https://www.alphavantage.co/support/#api-key).
+Free keys at [alphavantage.co/support](https://www.alphavantage.co/support/#api-key). But you don't need one — all 15 stocks come pre-seeded with cached data so everything works out of the box.
 
 ```bash
 npm run dev
+# http://localhost:3000
 ```
-
-Then open [http://localhost:3000](http://localhost:3000).
 
 ## Tech Stack
 
-- **Next.js 16** (App Router) for server components and routing
-- **TypeScript** for type safety
-- **Tailwind CSS v4** for styling
-- **Recharts** for the price charts
-- **AlphaVantage API** for company data and daily prices
+Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS v4, Recharts for charts, shadcn/ui components, and Alpha Vantage for market data. Deployed on Vercel.
 
 ## Requirements
 
@@ -48,32 +45,46 @@ Then open [http://localhost:3000](http://localhost:3000).
 - [x] Company logos on both pages
 - [x] Loading skeleton while data loads
 - [x] Price chart with 1W / 1M / 3M / 6M range toggles
+- [x] Financial fundamentals (P/E, EPS, dividend yield, beta, 52-week range, etc.)
+- [x] Bidirectional chart-table interaction (click a row to highlight on chart, hover chart to scroll table)
 
-## How It Works
+## Design Decisions
 
-API calls only happen on the detail page, not the homepage. The homepage reads from local data files so it loads instantly and doesn't use up any API calls.
+**Caching strategy:** The free API tier only gives 25 calls/day, so I had to be smart about it. Company overviews get cached for 30 days (they barely change outside of earnings). Daily prices also cache for 30 days. If the API is rate-limited or down, the app falls back to the last cached response instead of breaking. All 15 overviews are pre-fetched and shipped with the app, so only daily price fetches count against the limit during normal use.
 
-For the detail page, I set up caching so the app doesn't hit the API more than it needs to. Company overviews barely change (only on earnings reports), so those are cached for 30 days. Daily prices are cached for 24 hours since they only update once a day after market close.
+**Homepage doesn't call the API at all.** It reads directly from the cached JSON files on the server, so it loads instantly and never burns API calls. Only detail pages hit the API (and even then, only if the cache is stale).
 
-If the API is down or rate-limited, the app just shows the last cached data instead of breaking.
+**AMD in the hero, not AAPL or NVIDIA.** TensorWave runs on AMD GPUs, and NVIDIA is a competitor — felt like the right call for a TensorWave project.
 
-I also added a feature where you can click a row in the price table and it highlights that date on the chart, automatically switching to the right time range. Hovering over the chart clears the selection.
+**Scroll-locked hero.** The hero section locks the page scroll and cycles through three steps (Company Intelligence, Price Analytics, Market Data) as you scroll. Each step has its own animation — word-by-word text reveal, SVG chart line drawing, staggered table row fades. Scroll back up and it reverses. Inspired by Greptile's landing page.
 
-## Dealing with the 25/day API Limit
+**No framer-motion.** Considered it for animations but it felt like overkill for this project. Everything is CSS transitions + a custom scroll hook.
 
-The free tier only gives you 25 API calls per day, so I had to be careful:
-
-- All 15 company overviews are pre-fetched and included with the app, so they don't cost any API calls during normal use
-- That means only daily price fetches count against the limit (1 per stock = 15/day)
-- If something goes wrong, the app falls back to cached data instead of showing an error
+Cache files live in `src/data/mock/` as JSON — doubles as the pre-seeded demo data. One catch: Vercel's filesystem is read-only in production, so the file cache won't persist between serverless invocations. Would need Redis or similar for a real deployment.
 
 ## What I'd Improve
 
-- The free tier only gives you end-of-day prices and 100 data points (~5 months). A premium key would unlock real-time quotes and full history.
-- On Vercel the filesystem is read-only, so the file cache doesn't persist between serverless function calls. In production I'd use something like Redis instead.
-- It's pretty easy to add more stocks since you only need to pre-seed overviews once (1 call each, cached for 30 days). After the daily limit resets you'd have room for the price calls too, so scaling to 20+ stocks would just take a couple days.
-- With more time: tests, more financial data from the overview endpoint (P/E ratio, dividends, analyst ratings), and search by company name.
+- The free tier only gives end-of-day prices and 100 data points (~5 months). A premium key would unlock real-time quotes and full history.
+- WebSocket connection for live price updates instead of stale daily data.
+- Unit and integration tests — didn't prioritize these given the time constraint but would be first on the list for a production app.
+- Search by company name across detail pages, not just the homepage grid.
+- More charting options — candlestick charts, moving averages, volume overlays.
+
+## Project Structure
+
+```
+src/
+  app/              # Next.js pages (homepage + /stock/[symbol])
+  components/       # UI components (hero, cards, charts, etc.)
+  hooks/            # Custom React hooks
+  lib/              # API client, caching, formatting utils
+  data/             # Stock list + pre-seeded mock JSON (15 stocks)
+```
+
+## Tracked Stocks
+
+AAPL, MSFT, GOOGL, AMZN, NVDA, META, TSLA, JPM, V, JNJ, WMT, UNH, AMD, DIS, NFLX — mix of tech, finance, healthcare, and consumer sectors.
 
 ## Time Spent
 
-~12 hours over 3 days.
+~15 hours over 3 days.
