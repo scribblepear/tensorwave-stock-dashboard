@@ -27,7 +27,6 @@ export function AnimatedPrice({ value, isPositive, className = "" }: AnimatedPri
       if (progress < 1) {
         frameRef.current = requestAnimationFrame(tick);
       } else {
-        // Trigger flash when counter finishes
         setFlashing(true);
         setTimeout(() => setFlashing(false), 600);
       }

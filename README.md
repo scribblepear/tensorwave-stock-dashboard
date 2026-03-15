@@ -2,7 +2,7 @@
 
 Stock dashboard built for TensorWave's take-home coding challenge. Tracks 15 major stocks with company overviews, price charts, and financial metrics, all pulled from the Alpha Vantage API.
 
-The homepage opens with a scroll-locked hero section featuring AMD, then drops into a stock grid with stat cards, top movers, sector filtering, and search. Click any stock to get its detail page with an interactive price chart, daily price table, and key financials.
+The homepage opens with a hero section featuring AMD, then drops into a stock grid with search, filtering, and sorting. Click any stock to get its detail page with an interactive price chart, daily price table, and company info. Has dark mode too.
 
 **Live:** [tensorwave-stock-dashboard.vercel.app](https://tensorwave-stock-dashboard.vercel.app)
 
@@ -37,7 +37,7 @@ Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS v4, Recharts for cha
 
 ## Requirements
 
-- [x] 15 stocks displayed on the homepage as cards with logos, tickers, and sparklines
+- [x] 15 stocks displayed on the homepage as cards
 - [x] Clicking a stock takes you to its detail page
 - [x] Detail page loads Company Overview from AlphaVantage
 - [x] Detail page loads TIME_SERIES_DAILY from AlphaVantage
@@ -45,15 +45,8 @@ Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS v4, Recharts for cha
 - [x] Historical prices shown with date, close price, volume, and % change
 - [x] Responsive / mobile-friendly
 - [x] Company logos on both pages
-- [x] Loading skeleton while data loads
-- [x] Price chart with 1W / 1M / 3M / 6M range toggles
-- [x] Financial fundamentals (P/E, EPS, dividend yield, beta, 52-week range, etc.)
-- [x] Bidirectional chart-table interaction (click a row to highlight on chart, hover chart to scroll table)
-- [x] Candlestick chart mode with line/candle toggle
-- [x] Apple Stocks-style hover interaction - price info in top bar, thin crosshair, and dot on the data point
-- [x] Mobile/touch support for chart interactions on both line and candlestick modes
-- [x] Hero section disabled on tablet screens to avoid awkward scroll-lock on mid-size viewports
-- [x] Unit tests for utility functions
+- [x] Loading animation while data loads
+- [x] Price chart for historical data
 
 ## Design Decisions
 
@@ -91,4 +84,4 @@ AAPL, MSFT, GOOGL, AMZN, NVDA, META, TSLA, JPM, V, JNJ, WMT, UNH, AMD, DIS, NFLX
 
 ## Time Spent
 
-~15 hours over 3 days.
+~20 hours over 3 days.

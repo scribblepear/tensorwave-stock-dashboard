@@ -13,7 +13,7 @@ export function ShareButton(): React.ReactElement {
         setCopied(false);
       }, 2000);
     } catch {
-      /* clipboard API unavailable — silently ignore */
+      /* clipboard not available, ignore */
     }
   }, []);
 

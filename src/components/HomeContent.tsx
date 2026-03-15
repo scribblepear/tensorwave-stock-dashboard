@@ -27,9 +27,9 @@ type SortOption = "default" | "name" | "price" | "change";
 
 const SORT_LABELS: Record<SortOption, string> = {
   default: "Default",
-  name: "Name (A–Z)",
-  price: "Price (High–Low)",
-  change: "Change % (Best–Worst)",
+  name: "Name (A-Z)",
+  price: "Price (High-Low)",
+  change: "Change % (Best-Worst)",
 };
 
 const SORT_OPTIONS: SortOption[] = ["default", "name", "price", "change"];

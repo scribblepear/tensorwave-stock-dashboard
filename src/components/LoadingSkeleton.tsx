@@ -20,7 +20,6 @@ function smoothPath(pts: [number, number][]): string {
     const p1 = pts[i];
     const p2 = pts[i + 1];
     const p3 = pts[Math.min(i + 2, pts.length - 1)];
-    // control points at 1/6 tension
     const cp1x = p1[0] + (p2[0] - p0[0]) / 6;
     const cp1y = p1[1] + (p2[1] - p0[1]) / 6;
     const cp2x = p2[0] - (p3[0] - p1[0]) / 6;
