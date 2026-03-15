@@ -56,7 +56,7 @@ export function HeroSection({ prices, companyInfo, tableData }: HeroSectionProps
                 <ScrambleText text="TensorWave" duration={1200} />
               </span>
               <br />
-              <span style={{ color: "var(--color-primary)" }}>
+              <span className="text-[var(--color-primary)] dark:text-white">
                 <ScrambleText text="Markets" delay={300} duration={900} />
               </span>
             </h1>
