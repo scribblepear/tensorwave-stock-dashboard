@@ -92,7 +92,7 @@ export function HeroTableStep({ progress, tableData }: HeroTableStepProps) {
         </table>
         <div
           className="pointer-events-none absolute inset-x-0 bottom-0 h-32"
-          style={{ background: "linear-gradient(to top, white 10%, transparent)" }}
+          style={{ background: "linear-gradient(to top, var(--card) 10%, transparent)" }}
         />
       </div>
     </div>

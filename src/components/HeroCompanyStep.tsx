@@ -58,7 +58,7 @@ export function HeroCompanyStep({ progress, companyInfo }: HeroCompanyStepProps)
         </p>
         <div
           className="pointer-events-none absolute inset-x-0 bottom-0 h-10"
-          style={{ background: "linear-gradient(to top, white, transparent)" }}
+          style={{ background: "linear-gradient(to top, var(--card), transparent)" }}
         />
       </div>
 
